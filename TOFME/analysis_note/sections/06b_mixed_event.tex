@@ -1,0 +1,174 @@
+\section{Mixed-event setup for TPC--BTOF matching}
+\label{sec:me}
+
+This section describes step 2: projecting every QA track to BTOF with the helix stored in the picoDst,
+matching it at the cell level to the BTOF hits of the \emph{same} event (SE) and of \emph{other} events
+(mixed events, ME), and validating the projection against the production matching.
+Unless stated otherwise all numbers are from the same 10k-event test file as Secs.~\ref{sec:evtqa}--\ref{sec:tofqa}
+(\meEvtSelTest{} selected events), produced by \fpath{StRoot/StTofMEMaker} and summarised by
+\fpath{analysis_note/scripts/make_me.C} (\fpath{logs/me_numbers_test.txt}).
+
+\subsection{Method}
+\paragraph{BTOF geometry from data.} The picoDst does not contain the BTOF geometry, and the
+official geometry (\fcmd{StBTofGeometry}) needs the full detector description plus database
+alignment. Instead, the position of every module is fitted from production-matched tracks.
+For these, \fcmd{btofHitPos()} is the production projection point in global coordinates and
+($y_{\rm local}$, $z_{\rm local}$, cell) are its local coordinates, so for each module
+\begin{equation}
+\vec r_{\rm hit} = \vec C + y_{\rm local}\,\vec U + z_{\rm local}\,\vec V + (\mathrm{cell}-3.5)\,\vec W ,
+\end{equation}
+which is linear in the 12 parameters $(\vec C,\vec U,\vec V,\vec W)$. The maker accumulates the
+normal-equation sums per module (\fcmd{hGeomSum}, additive over jobs) and
+\fpath{macros/makeGeom.C} solves them (modules with $\ge20$ matched tracks).
+Of 3840 modules, \geoNFitTest{} are fitted, with a mean residual of \geoFitRmsTest\,cm, i.e.\ the
+picoDst position precision, so the linear model is exact. The fit gives $|\vec U|=\geoUmagTest$ (mean over modules), a cell pitch of
+\geoPitchAbsTest\,cm (RMS \geoPitchRmsTest\,cm over modules), the \fcmd{mWidthPad} value of
+\fcmd{StBTofMatchMaker}, and module-centre radii of \geoRMeanTest\,cm (RMS \geoRRmsTest\,cm;
+Fig.~\ref{fig:me_test_geo_r}). The remaining \geoNRotTest{} modules (dead in this run or with too few tracks) are
+copied from the same module of the nearest fitted tray in the same half (east/west), rotated about $z$
+by the tray-to-tray $\phi$ difference. Applying the same rotation to fitted modules (closure test) reproduces
+their centres to \geoClosureMeanTest\,cm on average (RMS \geoClosureRmsTest\,cm, at most
+\geoClosureMaxTest\,cm; Fig.~\ref{fig:me_test_geo_closure}), small compared with the 3.45\,cm pitch.
+Only \meFracRotGeomTest\% of the projected tracks land in a rotated module.
+
+\choice{Data-driven module geometry instead of \fcmd{StBTofGeometry}: it includes the production
+alignment automatically, has no database dependence, and is validated to the 0.01\,cm level by the
+fit residuals. Geometry file: \fpath{geom/btof_geom_test.txt} (from the test run 20093036).}
+
+\paragraph{Projection.} For each QA track (Sec.~\ref{sec:trkcuts}) the global helix is built with
+\fcmd{StPicoTrack::helix(B)} (origin = DCA point, global momentum, charge, $B$ from the event).
+It is intersected with a cylinder of radius 213.5\,cm (the mean module radius) to select candidate
+modules ($|\Delta\phi|<0.09$ to the tray centre, $|\Delta z|<12$\,cm to the module centre); then the exact
+intersection with each candidate module plane gives the local coordinates, the cell (pitch 3.45\,cm) and
+$z_{\rm local}$. The projection is accepted if it falls inside one of the six cells and $|z_{\rm local}|<3.05$\,cm
+(the production window). If several modules qualify, the one with smallest $|z_{\rm local}|$ is kept.
+
+\paragraph{Matching definitions.} Hits are stored only as cell IDs, so all matches are at the cell level:
+\begin{itemize}
+\item \textbf{cell}: a BTOF hit in the projected cell;
+\item \textbf{cell$\pm$1 (production-like)}: a hit in the projected cell or in an adjacent cell of the same module.
+  This is the production rule: \fcmd{StBTofMatchMaker} (SL24y, ``match find neighbours'') accepts a hit in the
+  projected cell or its $\pm1$ neighbour (checked in the source).
+\end{itemize}
+$P_{\rm SE}$ is the fraction of projected tracks matched to a hit of the same event.
+$P_{\rm ME}$ is the fraction of (track, partner-event) trials in which the projected cell (or cell$\pm$1) has a hit
+in the partner event. $f_{\rm rand}=P_{\rm ME}/P_{\rm SE}$ estimates the fraction of SE matches that are random.
+To first order the true matching efficiency is $\varepsilon_{\rm true}=(P_{\rm SE}-P_{\rm ME})/(1-P_{\rm ME})$.
+
+\paragraph{Mixing.} Partner events come from a FIFO buffer of the previous 5 selected events with the
+same run number, the same $V_z$ class (14 classes of 10\,cm) and the same refMult class (boundaries 0, 10, 25,
+50, 80, 120, 170, 230, 300). Buffers are cleared at each run change, so dead areas are identical in mixed pairs.
+\meFracFullMixTest\% of the events have the full 5 partners.
+
+\choice{Mixing classes in refMult (not number of BTOF hits) and $V_z$, depth 5, same run only.
+refMult is independent of BTOF, and the hit occupancy follows it closely (Fig.~\ref{fig:evt_refmult_vs_tofmult});
+$P_{\rm ME}$ is then studied directly versus the hit multiplicity of the partner event.}
+
+\subsection{Validation of the projection}
+Of the \meNTrkQATest{} QA tracks, \meFracProjOkTest\% have an accepted projection; the rest have no crossing
+with the TOF radius (\meFracNoRTest\%), fall between modules (\meFracNoModTest\%), outside the six cells
+(\meFracOutYTest\%) or outside $|z_{\rm local}|<3.05$\,cm (\meFracOutZTest\%) (Fig.~\ref{fig:me_test_projstatus}).
+
+For the \meNProdMatchTest{} production-matched QA tracks, \meFracPMProjTest\% have an accepted projection,
+\meFracPMModTest\% are projected to the same module as production and \meFracPMCellTest\% to the same cell
+(Fig.~\ref{fig:me_test_prodcmp}). Above $p=1.5$\,\GeVc{} the values are \meFracPMModHiTest\% (module) and
+\meFracPMCellHiTest\% (cell); for $0.2<p<0.4$\,\GeVc{} the same-cell fraction is only \meFracPMCellLoTest\%.
+Different cells in the same module are expected: \meProdYlOutTest\% of the production matches have
+$|y_{\rm local}|>1.75$\,cm, i.e.\ production matched them to a hit in the neighbouring cell.
+When the cells agree, the local-coordinate differences (Figs.~\ref{fig:me_test_dy},~\ref{fig:me_test_dz}) have
+RMS \meDyRmsHiTest\,cm ($y$) and \meDzRmsHiTest\,cm ($z$) for $p>1.5$\,\GeVc, growing to
+\meDyRmsLoTest\,cm and \meDzRmsLoTest\,cm for $p<0.45$\,\GeVc.
+
+\caveat{The picoDst helix starts at the DCA to the primary vertex, while production projects the outer
+TPC helix. Energy loss and multiple scattering between the TPC and BTOF are therefore not in this projection,
+which is why the agreement degrades at low momentum and $P_{\rm SE}$ is below the production match rate
+for $p_T<0.3$\,\GeVc{} (Table~\ref{tab:me}). $P_{\rm ME}$ is not affected (Sec.~\ref{sec:meres}).}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.32}{me_test_geo_r}{Radius of the fitted module centres.}
+\hfill
+\figpanel{0.32}{me_test_geo_closure}{Closure test of the rotated geometry: distance between rotated and
+fitted module centres, log scale.}
+\hfill
+\figpanel{0.32}{me_test_projstatus}{Projection status of QA tracks (fractions).}
+\\[1ex]
+\figpanel{0.32}{me_test_prodcmp}{For production-matched tracks: fraction with an accepted projection (grey),
+projected to the production module (blue), and to the production cell (red), vs $p$.}
+\hfill
+\figpanel{0.32}{me_test_dy}{$y_{\rm local}^{\rm proj}-y_{\rm local}^{\rm prod}$ vs $p$ when the cells agree, log colour scale.}
+\hfill
+\figpanel{0.32}{me_test_dz}{$z_{\rm local}^{\rm proj}-z_{\rm local}^{\rm prod}$ vs $p$ when the cells agree, log colour scale.}
+\caption{Geometry and projection validation (test sample).}
+\end{figure}
+
+\subsection{Same-event vs mixed-event matching (test sample)}
+\label{sec:meres}
+\meNProjTest{} QA tracks are projected and tested against \meNTrialsTest{} partner events in total.
+Integrated over $p_T$:
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & $P_{\rm SE}$ & $P_{\rm ME}$ (\%) & $f_{\rm rand}=P_{\rm ME}/P_{\rm SE}$ (\%) \\
+\midrule
+cell & \mePSETest & \mePMEpctTest & \meFakeFracTest \\
+cell$\pm$1 (production-like) & \mePSENbTest & \mePMENbpctTest & \meFakeFracNbTest \\
+\bottomrule
+\end{tabular}
+\end{center}
+The production match rate for the same projected tracks is \mePProdTest.
+The statistical uncertainty on $P_{\rm ME}$ is $\le0.01$\% (absolute).
+
+\begin{table}[h]
+\centering
+\caption{Matching probabilities vs $p_T$ for projected QA tracks (generated table \fpath{tables/me_eff_test.tex}).
+$P_{\rm prod}$: production match with $\beta>0$. Statistical errors on $P_{\rm ME}$; those on $P_{\rm SE}$ and $P_{\rm prod}$ are below 0.003.}
+\label{tab:me}
+\small
+\input{tables/me_eff_test.tex}
+\end{table}
+
+Main observations:
+\begin{itemize}
+\item \textbf{$P_{\rm ME}$ is the hit occupancy.} $P_{\rm ME}$ grows linearly with the number of hits $N_{\rm hits}$ in the partner
+  event (Fig.~\ref{fig:me_test_prob_nh}). A fit $P_{\rm ME}=a\,N_{\rm hits}$ gives $a=\meSlopePerHitTest\times10^{-5}$,
+  which is \meSlopeRatioTest{} times the uniform-occupancy expectation $1/23040$. Averaged over trials,
+  $P_{\rm ME}/(\langle N_{\rm hits}\rangle/23040)=\mePMEoverOccTest$.
+\item \textbf{$P_{\rm ME}$ is nearly flat} (2.3--2.5\% for the cell definition) in $p_T$, $\eta$ and in the local coordinates
+  (Figs.~\ref{fig:me_test_prob_pt}, \ref{fig:me_test_prob_eta}, \ref{fig:me_test_yl}, \ref{fig:me_test_zl}),
+  as expected for hits unrelated to the track; it rises with refMult (Fig.~\ref{fig:me_test_prob_ref}).
+  Because random hits do not depend on the track, $P_{\rm ME}$ does not depend on the projection precision.
+\item \textbf{Random-match fraction.} For the production-like definition $f_{\rm rand}$ is \meFakeMidNbTest\% for
+  $0.5<p_T<2$\,\GeVc{} and \meFakeLowNbTest\% for $0.15<p_T<0.3$\,\GeVc{} (Fig.~\ref{fig:me_test_fake_pt}); the
+  increase at low $p_T$ comes from the lower $P_{\rm SE}$ there.
+\item \textbf{Same-event shape.} $P_{\rm SE}$ falls towards the cell edges in $y_{\rm local}$
+  (\mePSEylCoreTest{} for $|y|<1$\,cm, \mePSEylEdgeTest{} for $1.3<|y|<1.6$\,cm) and at $|z_{\rm local}|\gtrsim2.8$\,cm;
+  there the true hit is often in the neighbouring cell or module.
+\item First-order true matching efficiency: $\varepsilon_{\rm true}=\meTrueEffNbTest$ (cell$\pm$1) and
+  \meTrueEffTest{} (cell).
+\end{itemize}
+
+\caveat{$f_{\rm rand}$ treats every projected track as equally exposed to random hits. Tracks whose own hit
+is present can still pick up a random hit in a neighbouring cell, which production would resolve differently.
+Production also resolves hits claimed by several tracks (flag 2) and requires a valid time, while $P_{\rm SE}$
+here does not; this is why $P_{\rm SE}^{\pm1}$ exceeds $P_{\rm prod}$ above 0.3\,\GeVc.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{me_test_prob_pt}{Matching probabilities vs $p_T$ (log scale): production (open black),
+SE cell$\pm$1 (open blue), SE cell (blue), ME cell$\pm$1 (open magenta), ME cell (red).}
+\hfill
+\figpanel{0.48}{me_test_fake_pt}{$f_{\rm rand}=P_{\rm ME}/P_{\rm SE}$ vs $p_T$ (\%) for cell$\pm$1 (open magenta) and cell (red).}
+\\[1ex]
+\figpanel{0.48}{me_test_prob_nh}{$P_{\rm ME}$ (cell) vs number of BTOF hits in the partner event (red);
+dashed blue: linear fit through the origin; dotted grey: uniform occupancy $N_{\rm hits}/23040$.}
+\hfill
+\figpanel{0.48}{me_test_prob_ref}{$P_{\rm SE}$ (blue) and $P_{\rm ME}$ (red), cell definition, vs refMult of the track's event.}
+\\[1ex]
+\figpanel{0.32}{me_test_prob_eta}{$P_{\rm SE}$ and $P_{\rm ME}$ (cell) vs $\eta$.}
+\hfill
+\figpanel{0.32}{me_test_yl}{$P_{\rm SE}$ and $P_{\rm ME}$ (cell) vs projected $y_{\rm local}$.}
+\hfill
+\figpanel{0.32}{me_test_zl}{$P_{\rm SE}$ and $P_{\rm ME}$ (cell) vs projected $z_{\rm local}$.}
+\caption{Same-event (blue) and mixed-event (red) matching, test sample. Errors: 68\% binomial intervals.}
+\end{figure}

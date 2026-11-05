@@ -1,0 +1,47 @@
+\section{Cuts adopted and inputs for the mixed-event step}
+\label{sec:cuts}
+
+\begin{table}[h]
+\centering
+\caption{Selection used in this QA (defaults in \fpath{macros/runTofMEQA.C} and the constructor of \fcmd{StTofMEQAMaker}).}
+\label{tab:cuts}
+\small
+\begin{tabular}{llp{5cm}}
+\toprule
+Level & Cut & Status \\
+\midrule
+Event & trigger $\in$ \{640001, 640011, 640021, 640031, 640041, 640051\} & applied \\
+Event & $|V_z|<70$\,cm & applied \\
+Event & $V_r<2$\,cm & applied \\
+Event & $|V_z-V_z^{\rm VPD}|$ & not applied \\
+Event & pile-up / bad-run rejection & not implemented \\
+Track & primary, $p_T>0.15$\,\GeVc & applied \\
+Track & nHitsFit $\ge15$, nHitsFit/nHitsMax $>0.52$ & applied \\
+Track & gDCA $<3$\,cm & applied \\
+Track & $|\eta|<1$ & applied \\
+TOF & btofMatchFlag $>0$ & applied \\
+TOF & $\beta>0$ & applied (TOF-matched sample) \\
+TOF & $|y_{\rm local}|$, $|z_{\rm local}|$ & none beyond production ($|z_{\rm local}|<3.05$\,cm) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+What this QA implies for the mixed-event matching:
+\begin{itemize}
+\item With \hitsPerMatched{} stored hits per TOF-matched QA track and a matching window of one pad in $y$
+  and $\pm3.05$\,cm in $z$, the random-match probability will depend strongly on event multiplicity;
+  events must be mixed within multiplicity classes (refMult or number of BTOF hits) and $V_z$ classes.
+\item The picoDst stores only the cell ID of each BTOF hit, so matching is done at the cell level with the
+  projection of Sec.~\ref{sec:me} (implemented).
+\item Dead trays/modules are identical between mixed events because mixing is restricted to one run (implemented).
+\item The $y_{\rm local}$ side-bands ($|y_{\rm local}|>2.5$\,cm) provide an independent same-event
+  estimate of the random-match level that the mixed-event result can be compared to.
+\end{itemize}
+
+\decision{(1) Is the minimum-bias trigger list correct for P24iy, or should the analysis use 640051 only?
+(2) Should a $|V_z-V_z^{\rm VPD}|$ cut be used, given the VPD vertex is available for only \fracVpdValid\% of
+events? (3) Mixing classes: refMult (used now) or number of BTOF hits, and is a 10\,cm $V_z$ class adequate?
+(4) Which matching rule should the final random-match correction use: production-like cell$\pm$1 (default
+proposal) or cell only?
+(5) Low-$p_T$ projection: accept the DCA-helix projection, or add an energy-loss correction / use the
+production cell for same-event matches?}

@@ -1,0 +1,99 @@
+\subsection{Mixed-event results with the 1M-event sample}
+\label{sec:me1m}
+
+\paragraph{Sample and processing.} The large sample is \meNRunsVthree{} runs evenly spaced over the run range
+(20057003--20091008), one HTCondor job per run (\fpath{scripts/select_runs.py}, \fpath{scripts/me_v3.sub},
+cluster 790125). Runs are taken only if they are not in the StRefMultCorr bad-run list for 2019 and if their
+largest files give at least 60\,000 events. Files are deduplicated by name, because the catalog lists every
+replica as a separate entry (99\,273 entries, 79\,596 unique files; \fpath{logs/catalog_unique_P24iy.txt}). Files
+with a replica on the XRootD server qgp017 were excluded, because jobs reading from it stalled repeatedly.
+All \meNJobsVthree{} jobs finished normally (\fpath{scripts/merge_v3.sh}): \meEvtAllVthree{} events read and
+\meEvtSelVthree{} selected. With one run per job the 126 mixing buffers fill once per job, and
+\meFracFullMixVthree\% of the selected events have all 5 mixing partners.
+The jobs use the geometry fitted on the earlier large pass (\fpath{geom/btof_geom_1M.txt}).
+
+\caveat{An earlier 1M-event pass (one file per job, draft v0.3 of this note) processed 5 files twice because of the
+duplicate catalog entries. It is superseded by this sample. Its integrated $P_{\rm ME}$ values (2.33\% and 5.21\%)
+agree with the ones below within 0.03 percentage points.}
+
+\caveat{The selected-event fraction is 42\% here, against 55\% in the test file, because the $V_z$ distribution
+differs between runs. All rates below are per projected track or per mixed trial, so they are not affected,
+but event-level averages are not directly comparable with Sec.~\ref{sec:evtqa}.}
+
+\paragraph{Geometry stability.} The geometry refitted from the merged sums of the \meNJobsVthree{} jobs
+(\fpath{geom/btof_geom_v3.txt}) has \geoNFitVthree{} fitted modules, fit residual \geoFitRmsVthree\,cm and pitch
+\geoPitchAbsVthree\,cm. For the \geoCmpNVthree{} modules fitted in both, the module centres differ from the
+test-run geometry by \geoCmpMeanVthree\,cm on average (at most \geoCmpMaxVthree\,cm).
+The BTOF geometry is stable across the runs used, and the test-run geometry is adequate.
+
+\paragraph{Projection and matching.} With \meNTrkQAVthree{} QA tracks and \meNTrialsVthree{} mixed trials, the
+projection-level numbers of the test sample are reproduced: \meFracProjOkVthree\% of the tracks are projected, and for
+production-matched tracks \meFracPMCellHiVthree\% (cell) and \meFracPMModHiVthree\% (module) agree above 1.5\,\GeVc.
+The integrated probabilities are
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & $P_{\rm SE}$ & $P_{\rm ME}$ (\%) & $f_{\rm rand}=P_{\rm ME}/P_{\rm SE}$ (\%) \\
+\midrule
+cell & \mePSEVthree & \mePMEpctVthree & \meFakeFracVthree \\
+cell$\pm$1 (production-like) & \mePSENbVthree & \mePMENbpctVthree & \meFakeFracNbVthree \\
+\bottomrule
+\end{tabular}
+\end{center}
+with statistical uncertainties below $10^{-4}$, compared with \mePMEpctTest\% and \mePMENbpctTest\% in the test sample.
+$f_{\rm rand}$ (cell$\pm$1) is \meFakeMidNbVthree\% for $0.5<p_T<2$\,\GeVc{} and \meFakeLowNbVthree\% for $0.15<p_T<0.3$\,\GeVc{}
+(Table~\ref{tab:me1m}, Fig.~\ref{fig:me_Vthree_fake_pt}). $P_{\rm ME}$ equals the trial-averaged hit occupancy
+($P_{\rm ME}/(\langle N_{\rm hits}\rangle/23040)=\mePMEoverOccVthree$; slope \meSlopeRatioVthree{} times $1/23040$).
+These are probabilities that a random hit is \emph{present} in the matching cells. How often such a hit is
+actually chosen instead of the track's own hit, and which $m^2$ it then gives, is the subject of Sec.~\ref{sec:m2}.
+
+\begin{table}[h]
+\centering
+\caption{Matching probabilities vs $p_T$, 1M-event sample (\fpath{tables/me_eff_v3.tex}); notation as in Table~\ref{tab:me}.}
+\label{tab:me1m}
+\small
+\input{tables/me_eff_v3.tex}
+\end{table}
+
+\caveat{$P_{\rm ME}$ is not exactly flat in $p_T$ (Table~\ref{tab:me1m}). The origin is not understood. Candidates: harder
+tracks come more often from higher-refMult events within a mixing class, or point preferentially to higher-occupancy
+regions. This was not checked.}
+
+\paragraph{Run dependence.} Per run, $P_{\rm ME}$ (cell$\pm$1) ranges from \mePMENbMinVthree\% to \mePMENbMaxVthree\%
+(Fig.~\ref{fig:me_Vthree_runs}), following the occupancy: the ratio $P_{\rm ME}/(\langle N_{\rm hits}\rangle/23040)$ stays
+between \mePMEoccMinVthree{} and \mePMEoccMaxVthree{} (Fig.~\ref{fig:me_Vthree_runs_norm}).
+Per-run values: \fpath{logs/me_runs_v3.txt} (\fpath{scripts/make_me_runs.C}).
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{me_Vthree_prob_pt}{Matching probabilities vs $p_T$, 1M sample; markers as in Fig.~\ref{fig:me_test_prob_pt}.}
+\hfill
+\figpanel{0.48}{me_Vthree_fake_pt}{$f_{\rm rand}$ vs $p_T$, 1M sample: cell$\pm$1 (open magenta), cell (red).}
+\\[1ex]
+\figpanel{0.48}{me_Vthree_prob_nh}{$P_{\rm ME}$ (cell) vs number of BTOF hits in the partner event, with linear fit (dashed)
+and uniform occupancy (dotted).}
+\hfill
+\figpanel{0.48}{me_Vthree_prob_ref}{$P_{\rm SE}$ (blue) and $P_{\rm ME}$ (red) vs refMult, cell definition.}
+\\[1ex]
+\figpanel{0.48}{me_Vthree_runs}{$P_{\rm ME}$ per run (one job per run, ordered by run number): cell$\pm$1 (open magenta)
+and cell (red); statistical errors are smaller than the markers.}
+\hfill
+\figpanel{0.48}{me_Vthree_runs_norm}{$P_{\rm ME}$ (cell) per run divided by the trial-averaged occupancy $\langle N_{\rm hits}\rangle/23040$.}
+\caption{Mixed-event results, 1M sample (\meEvtSelVthree{} selected events from \meNRunsVthree{} runs).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.32}{me_Vthree_prob_eta}{$P_{\rm SE}$, $P_{\rm ME}$ (cell) vs $\eta$.}
+\hfill
+\figpanel{0.32}{me_Vthree_yl}{$P_{\rm SE}$, $P_{\rm ME}$ (cell) vs projected $y_{\rm local}$.}
+\hfill
+\figpanel{0.32}{me_Vthree_zl}{$P_{\rm SE}$, $P_{\rm ME}$ (cell) vs projected $z_{\rm local}$.}
+\\[1ex]
+\figpanel{0.32}{me_Vthree_prodcmp}{Projection vs production (as Fig.~\ref{fig:me_test_prodcmp}).}
+\hfill
+\figpanel{0.32}{me_Vthree_dy}{$\Delta y_{\rm local}$ vs $p$, same cell.}
+\hfill
+\figpanel{0.32}{me_Vthree_dz}{$\Delta z_{\rm local}$ vs $p$, same cell.}
+\caption{Differential mixed-event and projection plots, 1M sample (same blue/red convention as Sec.~\ref{sec:meres}).}
+\end{figure}

@@ -1,0 +1,53 @@
+\section{Track-level QA}
+\label{sec:trkqa}
+
+\begin{table}[h]
+\centering
+\caption{Track cut flow, summed over the \nEvtSel{} selected events (generated table \fpath{tables/trkcut.tex}).
+Rows 1--3 are the TPC selection of Sec.~\ref{sec:trkcuts}; rows 4--6 the BTOF association of Sec.~\ref{sec:tofdef}.}
+\label{tab:trkcut}
+\small
+\input{tables/trkcut.tex}
+\end{table}
+
+Table~\ref{tab:trkcut} gives the track yields. The quality cuts keep most primary tracks, and the
+$|\eta|<1$ cut keeps \fracEtaKept\% of those: with the inner TPC (iTPC) upgrade in Run19, primary tracks
+extend well beyond $|\eta|=1$ (Fig.~\ref{fig:trk_eta}). The QA sample has \perEvtTrkEta{} tracks per event,
+mean $p_T$ = \meanPt\,\GeVc.
+
+\begin{figure}[H]
+\centering
+\figpanel{0.32}{trk_nhitsfit}{nHitsFit, primary $p_T>0.15$\,\GeVc, before quality cuts. Red: cut at 15.}
+\hfill
+\figpanel{0.32}{trk_nhitsratio}{nHitsFit/nHitsMax, same sample. Red: cut at 0.52. The spikes are a
+binning effect of the ratio of two integers.}
+\hfill
+\figpanel{0.32}{trk_dca}{gDCA, same sample, log scale. Red: cut at 3\,cm.}
+\\[1ex]
+\figpanel{0.32}{trk_eta}{$\eta$ after quality cuts. Red: $|\eta|<1$.}
+\hfill
+\figpanel{0.32}{trk_pt}{$p_T$ of QA tracks, log scale.}
+\hfill
+\figpanel{0.32}{trk_phi}{$\phi$ of QA tracks (1$^\circ$ bins). Flat within about $\pm5\%$
+except a dip near $\phi\approx-0.6$ to $-0.3$.}
+\\[1ex]
+\figpanel{0.32}{trk_nhitsdedx}{nHitsDedx of QA tracks.}
+\hfill
+\figpanel{0.32}{trk_etaphi}{$\phi$ vs $\eta$ of QA tracks (linear colour scale). A region of lower
+density is visible at $\phi\approx-0.6$ for $\eta>0$.}
+\caption{TPC track QA. Top row: distributions of the cut variables (before the cuts) and $\eta$; other panels: QA track sample
+(primary, $p_T>0.15$\,\GeVc, quality cuts, $|\eta|<1$).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{trk_dedx}{d$E$/d$x$ (keV/cm, as stored in the picoDst) vs $p\times q$ for QA tracks, log colour scale.
+$\pi$, K and p bands are separated at low momentum for both charges; a deuteron band is visible for positive charge.}
+\hfill
+\figpanel{0.48}{trk_nsigpi}{TPC $n\sigma_\pi$ vs $p$ of QA tracks, log colour scale.}
+\caption{TPC d$E$/d$x$ PID for the QA track sample.}
+\end{figure}
+
+\caveat{The reduced track density near $\phi\approx-0.6$, $\eta>0$ (one TPC sector region of the west
+half, by its position) was seen by eye only and not traced to a sector or run condition. The $\phi$ and
+$\eta$--$\phi$ structure was not quantified.}

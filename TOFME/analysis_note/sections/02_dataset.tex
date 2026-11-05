@@ -1,0 +1,73 @@
+\section{Dataset, software and computing}
+\label{sec:data}
+
+\subsection{Dataset}
+The STAR file catalog was queried with \fcmd{get_file_list.pl} for
+\fcmd{filetype=daq_reco_picoDst, trgsetupname=production_19GeV_2019}. Three productions exist:
+P21ic (SL21c), P23id (SL23d) and P24iy (SL24y).
+
+\choice{Use P24iy, the most recent production of the Run19 19.6\,GeV data (library SL24y).
+The picoDst format is the one defined in \fpath{StRoot/StPicoEvent} of
+\url{https://github.com/star-bnl/star-sw}; the SL24y copy of that package is used to read it.}
+
+For P24iy the catalog lists 100\,560 files on HPSS, 99\,273 on \texttt{local} storage
+($1.42\times10^9$ events) and 100\,958 NFS entries. For the latest runs, the NFS paths checked
+(first 3000 entries ordered by run number) do not exist on disk.
+
+\choice{Read the \texttt{local} replicas through XRootD,
+\fpath{root://xrdstar.rcf.bnl.gov:1095//home/starlib/...} (absolute path, double slash).
+The full list is \fpath{filelists/P24iy_19GeV_all_xrd.list}; the catalog dump is
+\fpath{filelists/local_P24iy_all.txt}.}
+
+\paragraph{Test sample.} One file from the last run in the catalog, run 20093036:
+\inputFile{} (\nChainEvents{} events in the TTree). The first \nProcEvents{} events were processed
+(\fpath{filelists/test.list}).
+
+\caveat{A single file of a single run is not representative of the whole dataset (beam conditions,
+detector status, luminosity vary run by run). Statistics are adequate for shapes and mean values,
+not for run-dependent or tray-dependent conclusions.}
+
+\subsection{Software and computing}
+\label{sec:software}
+\begin{table}[h]
+\centering
+\caption{Software environment, from \fpath{logs/provenance.txt} (version banners on the node) and the run log.}
+\small
+\begin{tabular}{lp{12.5cm}}
+\toprule
+Node & starsub01.sdcc.bnl.gov, \hostOS \\
+Container & \containerImage{} (\containerOS) \\
+STAR library & SL24y (\fpath{/star/nfs4/AFS/star/packages/SL24y}) \\
+ROOT & \rootVersion{} (STAR spack build) \\
+Compiler & gcc \gccVersion \\
+Executable & \fcmd{root4star} (SL24y, .sl73\_x8664\_gcc485) \\
+Run date & \runDate{} (EST) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\choice{The interactive nodes run AlmaLinux 9 while the STAR libraries are SL7 builds. All builds
+(\fcmd{cons}) and jobs run in the SL7 container via the wrapper \fpath{scripts/sl7.sh}
+(\fcmd{apptainer exec -B /gpfs01,/gpfs,/star,/cvmfs,/direct,/sdcc ... tcsh -c "starver SL24y; ..."}).}
+
+Working directory: \fpath{/gpfs01/star/pwg/dongx/tof/TOFME}. Code:
+\begin{itemize}
+\item \fpath{StRoot/StTofMEQAMaker/StTofMEQAMaker.{h,cxx}} --- QA maker (\fcmd{StMaker}) behind \fcmd{StPicoDstMaker} in read mode.
+\item \fpath{macros/runTofMEQA.C} --- chain macro; sets cuts and trigger IDs.
+\item \fpath{scripts/run_qa.sh N list out log} --- runs the macro in the container.
+\item \fpath{macros/drawTofMEQA.C}, \fpath{scripts/draw_qa.sh} --- quick-look plots on the node.
+\item \fpath{StRoot/StTofMEMaker}, \fpath{macros/runTofME.C}, \fpath{macros/makeGeom.C}, \fpath{scripts/run_me.sh},
+  \fpath{scripts/me_test.sh}, \fpath{scripts/select_runs.py}, \fpath{scripts/me_v3.sub}, \fpath{scripts/merge_v3.sh}
+  --- projection, mixed-event and $m^2$ step (Sec.~\ref{sec:me}--\ref{sec:m2}).
+\item Note figures/tables: \fpath{analysis_note/scripts/make_figures.C}, \fpath{make_numbers.C}, \fpath{make_me.C}, \fpath{make_me_runs.C}, \fpath{make_m2.C}, \fpath{parse_log.py}, run by \fpath{build.sh} on the local copy \fpath{analysis_note/data/qa_test_10k.root}.
+\end{itemize}
+
+\choice{Only the picoDst branches \fcmd{Event}, \fcmd{Track}, \fcmd{BTofHit} and \fcmd{BTofPidTraits}
+are enabled (\fcmd{StPicoDstMaker::SetStatus}), since nothing else is used.}
+
+\paragraph{Performance.} Processing \nProcEvents{} events took \wallSec\,s wall time but only
+\cpuSec\,s CPU; \picoWallPct\% of the wall time is spent in \fcmd{StPicoDstMaker}, i.e.\ the job is
+limited by XRootD I/O, not by the analysis.
+
+\caveat{At this rate (about 30 events/s per job) full-dataset processing needs batch jobs,
+ideally scheduled close to the data; this has not been set up yet.}

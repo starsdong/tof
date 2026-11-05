@@ -1,0 +1,83 @@
+\section{Event-level QA}
+\label{sec:evtqa}
+All figures in Secs.~\ref{sec:evtqa}--\ref{sec:tofqa} are produced by
+\fpath{analysis_note/scripts/make_figures.C} from \fpath{data/qa_test_10k.root} (copy of
+\fpath{output/qa_test_10k.root} on the node). Unless stated otherwise they show the
+\nEvtSel{} selected events; the event count printed above each frame is the number of selected events.
+Errors are statistical.
+
+\begin{table}[h]
+\centering
+\caption{Event cut flow for the test sample (\fcmd{hEvtCut}; generated table \fpath{tables/evtcut.tex}).}
+\label{tab:evtcut}
+\input{tables/evtcut.tex}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Trigger IDs stored in the picoDst for all \nEvtAll{} events read (an event can carry several).
+IDs with fewer than 50 events are summed. \nTrigIds{} distinct IDs occur in total
+(full list in \fpath{logs/numbers.txt}).}
+\label{tab:trigger}
+\input{tables/trigger.tex}
+\end{table}
+
+\paragraph{Trigger.} \nEvtTrig{} of \nEvtAll{} events carry 640051, the only minimum-bias ID present.
+IDs 6, 35, 36 and 37 also appear in a large fraction of events.
+\caveat{The meaning of trigger IDs 6, 35, 36, 37, 640601 and 6408xx was not looked up. They do not
+affect the selection, which only requires one of the minimum-bias IDs.}
+
+\paragraph{Vertex.} The $V_z$ distribution before cuts is broad (RMS \rmsVzAll\,cm, mean \meanVzAll\,cm),
+so the $|V_z|<70$\,cm cut is the largest loss (Table~\ref{tab:evtcut}, Fig.~\ref{fig:evt_vz}).
+The transverse vertex is at $(\langle V_x\rangle,\langle V_y\rangle)=(\meanVx,\meanVy)$\,cm with RMS
+\rmsVx{} and \rmsVy\,cm (Fig.~\ref{fig:evt_vxvy}), well inside the $V_r<2$\,cm circle centred at the origin.
+
+\paragraph{VPD vertex.} For \fracVpdValid\% of the selected events $V_z^{\rm VPD}$ lies within $\pm200$\,cm;
+the remainder has no valid VPD vertex. These events, together with events with
+$|\Delta V_z|>20$\,cm, populate the under-/overflow of Fig.~\ref{fig:evt_vzdiff} (\nVzDiffUnder{} / \nVzDiffOver{} events). A Gaussian fit to the core ($|\Delta V_z|<3$\,cm) of
+$\Delta V_z = V_z-V_z^{\rm VPD}$ gives mean \vzDiffMean\,cm and $\sigma=\vzDiffSigma$\,cm;
+only \fracVzDiffThree\% of the selected events have $|\Delta V_z|<3$\,cm.
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{evt_vz}{$V_z$ for all \nEvtAll{} events read (grey line) and for the selected events
+(blue, filled). Red dashed lines: $|V_z|<70$\,cm. 1\,cm bins.}
+\hfill
+\figpanel{0.48}{evt_vxvy}{$V_y$ vs $V_x$ for selected events; the red dashed circle is $V_r=2$\,cm. 0.05\,cm bins.}
+\\[1ex]
+\figpanel{0.48}{evt_vzdiff}{$V_z^{\rm TPC}-V_z^{\rm VPD}$ (0.1\,cm bins, log scale). The central
+Gaussian core has $\sigma=\vzDiffSigma$\,cm; events without VPD vertex are outside the range.}
+\hfill
+\figpanel{0.48}{evt_refmult}{refMult (blue solid) and gRefMult (red dashed), 1-unit bins, log scale.
+Means \meanRefMult{} and \meanGRefMult.}
+\caption{Event-level distributions of the test sample.}
+\end{figure}
+
+\paragraph{Multiplicities and BTOF hits.} Per selected event the mean refMult is \meanRefMult, the mean
+nBTOFMatch (\fcmd{StPicoEvent::nBTOFMatch}) is \meanNBTofMatch{} and the mean number of stored BTOF hits
+is \meanNBTofHits{} (maximum \maxNBTofHits). The mean of \fcmd{btofTrayMultiplicity} is also \meanTofMult.
+Figure~\ref{fig:evt_nhits_vs_nmatch} shows that the number of BTOF hits grows linearly with the number of
+matched tracks, and Fig.~\ref{fig:evt_ntoftrk_vs_nhits} that the number of TOF-matched \emph{primary}
+QA tracks follows it closely (correlation factor \corrTofTrkHits). On average there are \hitsPerMatched{}
+BTOF hits per TOF-matched QA track; most hits are therefore \emph{not} associated with a selected track
+--- they come from tracks outside the selection, secondaries, or noise, and are the
+candidates for random matches.
+
+\caveat{The hit counts and \fcmd{btofTrayMultiplicity} have identical mean and RMS in this sample, which
+suggests the picoDst keeps all BTOF hits of the event. Not verified in \fcmd{StPicoDstMaker}.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{evt_refmult_vs_tofmult}{refMult vs \fcmd{btofTrayMultiplicity}.}
+\hfill
+\figpanel{0.48}{evt_refmult_vs_nmatch}{refMult vs nBTOFMatch. No pile-up cut is applied; the band
+is narrow with few outliers in this sample.}
+\\[1ex]
+\figpanel{0.48}{evt_nhits_vs_nmatch}{Number of stored BTOF hits vs nBTOFMatch.}
+\hfill
+\figpanel{0.48}{evt_ntoftrk_vs_nhits}{Number of TOF-matched primary QA tracks per event
+(Sec.~\ref{sec:tofdef}) vs number of stored BTOF hits.}
+\\[1ex]
+\figpanel{0.48}{evt_nbtofhits}{Number of stored BTOF hits per selected event, log scale.}
+\caption{Event multiplicity correlations (log colour scale for 2D panels).}
+\end{figure}

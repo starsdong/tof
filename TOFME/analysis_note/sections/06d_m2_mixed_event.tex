@@ -1,0 +1,140 @@
+\subsection{$m^2$ of same-event and mixed-event matches per centrality}
+\label{sec:m2}
+
+This section uses the 1M-event sample of Sec.~\ref{sec:me1m} (\fpath{StRoot/StTofMEMaker} version 3,
+\fpath{output/me_v3.root}). It answers the question: what does the $m^2$ distribution of
+random TPC--BTOF matches look like, and how much of the measured $m^2$ distribution does it account for, in each
+momentum bin and centrality class? Numbers: \fpath{logs/m2_numbers_v3.txt} from \fpath{scripts/make_m2.C}.
+
+\subsubsection{Method}
+\paragraph{Centrality.} Centrality is taken from StRefMultCorr (Au+Au 19.6\,GeV 2019 parameters: $V_z$- and
+luminosity-corrected refMult, nine classes from 0--5\% to 70--80\%). Of the \mtEvtSelVthree{} selected events,
+\mtEvtPileVthree{} are flagged as pile-up by its refMult--nBTOFMatch cut, \mtEvtPeriphVthree{} are beyond 80\%,
+and \mtEvtNoTimeVthree{} have no BTOF hit with a time (no valid start time). The remaining \mtEvtUsedVthree{} events
+enter the $m^2$ histograms. Bad runs are excluded at the run selection. The mixing classes are unchanged (raw refMult).
+
+\paragraph{Hit times.} A picoDst BTOF hit carries only its cell. A time of flight exists for a hit only if a picoDst
+track was matched to it in production (\fcmd{StPicoBTofPidTraits::btof()}, with $\beta>0$). On average
+\mtTimedFracVthree\% of the hits per event have a time. Each cell therefore has one of three states: no hit, hit with
+time $t$, hit without time.
+
+\paragraph{$\beta$ and $m^2$.} For each projected QA track the hit is chosen as in production: the projected cell,
+otherwise the nearer, then the farther neighbour, preferring hits that have a time (Sec.~\ref{sec:me}). The path length is
+$L=$ \fcmd{tofPathLength}(primary vertex, projected point, helix curvature), the same function as
+\fcmd{StBTofMatchMaker}, and
+\begin{equation}
+\beta = \frac{L}{c\,t},\qquad m^2 = p^2\left(\frac{1}{\beta^2}-1\right),
+\end{equation}
+with $p$ the primary momentum. For tracks whose own production hit is chosen, $L$ agrees with production
+($L-\beta_{\rm prod}c\,t_{\rm prod}$: mean \mtDLMeanVthree\,cm, RMS \mtDLRmsVthree\,cm) and $m^2$ differs from the
+production value by \mtDmRmsVthree\,GeV$^2$/$c^4$ RMS. The same-event (SE) $m^2$ is therefore the production $m^2$
+of the projected tracks.
+
+\paragraph{Mixed event with overlay.} A random hit only produces a wrong $m^2$ when it is chosen \emph{instead of}
+the track's own hit. The mixed event (ME) is therefore built as an overlay: the hits of a partner event (same run,
+$V_z$ and refMult class, up to 5 partners) are added on top of the hits of the track's own event, and the hit choice
+above is redone. When a partner hit is chosen (projected cell free in this event, or same cell with an earlier
+partner time), its time is combined with the track's $L$ and $p$ to give an $m^2$. Without the overlay, every
+partner hit present in the matching cells would count. That version (kept for reference, \fcmd{hM2ME}) exceeds the
+SE yield in the $\pi$--K and K--p valleys by a factor \mtValleyPlainMinVthree--\mtValleyPlainMaxVthree{} in 0--5\%
+($0.4<p<1.5$\,\GeVc), which is impossible. The overlay keeps \mtShadowFracVthree\% of those entries.
+
+\paragraph{Normalization.} No fit is used. In each centrality class $c$ and fine momentum bin $j$ (0.05\,\GeVc)
+\begin{equation}
+\frac{dN_{\rm rand}}{dm^2}(c,j) = \frac{dN_{\rm ME}}{dm^2}(c,j)\;\frac{N_{\rm proj}(c,j)}{N_{\rm trials}(c,j)}\;
+\frac{n_{\rm t}+n_{\rm u}}{n_{\rm t}},
+\end{equation}
+where $N_{\rm proj}$ counts projected tracks, $N_{\rm trials}$ the (track, partner) pairs, and $n_{\rm t}$ ($n_{\rm u}$)
+the trials whose chosen partner hit has (has no) time. The last factor, \mtTimedScaleAllVthree{} on average
+(\mtTimedScaleCaVthree{} in 70--80\%, \mtTimedScaleCiVthree{} in 0--5\%), restores the random hits that have no stored
+time: only \mtMETimedFracVthree\% of the partner hits chosen in the mixed events have a time.
+Coarse momentum bins are sums of the normalized fine bins.
+
+\choice{All BTOF hits are included in the random-match estimate (user's decision). Random hits without a stored time
+are assumed to have the same time distribution as random hits with a time.}
+\caveat{Hits without a time are those no picoDst track was matched to: secondaries, particles not reconstructed in the
+TPC, noise. Their times are probably later on average than those of matched hits, so the shape of the random $m^2$
+distribution may be biased towards small $m^2$; its normalization would be lower by a factor
+\mtTimedScaleAllVthree{} if only timed hits were counted.}
+
+\subsubsection{Results}
+\caveat{The overlay used here always keeps the track's own hit in the projected cell. Production instead picks the
+hit with the largest ToT among the projected and neighbouring cells, so the random matches below are underestimated.
+Sec.~\ref{sec:bkg} studies this and the late background the picoDst cannot describe.}
+Figures~\ref{fig:m2_v3_cent8}--\ref{fig:m2_v3_allcent} overlay the normalized ME distribution on the SE $m^2$
+distribution in nine momentum bins for 0--5\%, 30--40\%, 70--80\% and 0--80\%; the other centralities are in
+Appendix~\ref{app:m2}. Table~\ref{tab:m2contam} and Fig.~\ref{fig:m2_v3_frand} give the random fraction under the
+$\pi$, K and p peaks.
+
+\begin{itemize}
+\item \textbf{Size.} Integrated over $m^2$ and $0.2<p<3$\,\GeVc, random matches are \mtMENormFracVthree\% of the SE
+  matches in 0--80\%, \mtMENormFracCiVthree\% in 0--5\%, \mtMENormFracCeVthree\% in 30--40\% and \mtMENormFracCaVthree\% in 70--80\%.
+  This is smaller than $f_{\rm rand}$ of Sec.~\ref{sec:me1m}, because the track's own hit is usually chosen first.
+\item \textbf{Under the peaks (0--5\%).} At $0.2<p<0.4$\,\GeVc{} the random fraction is \mtFrPiLoCiVthree\% ($\pi$),
+  \mtFrKLoCiVthree\% (K) and \mtFrPLoCiVthree\% (p); at $0.8<p<1.0$\,\GeVc{} it is \mtFrPiMidCiVthree\%, \mtFrKMidCiVthree\% and
+  \mtFrPMidCiVthree\%. In 30--40\% the values are about three times smaller (\mtFrPiMidCeVthree\%, \mtFrKMidCeVthree\%,
+  \mtFrPMidCeVthree\% at $0.8<p<1.0$\,\GeVc), and in 70--80\% they are below 0.4\%. The kaon fraction stays roughly flat
+  with $p$, because random $m^2$ values pile up between the pion and proton peaks.
+\item \textbf{Shape (read by eye).} The random distribution peaks just above $m^2=0$ and falls steadily towards large
+  $m^2$. At low momentum it follows the SE distribution in the $\pi$--K valley; at higher momentum it lies well below
+  the SE distribution everywhere except in the valleys.
+\item \textbf{Consistency.} In 0--5\%, $0.4<p<1.5$\,\GeVc, the largest ME/SE ratio in any $m^2$ bin (0.04\,GeV$^2$/$c^4$,
+  at least 50 SE counts) is \mtValleyAllVthree. In the lowest momentum bin (0.2--0.4\,\GeVc) it is 1.21
+  (Table~\ref{tab:m2contam}), so the estimate is somewhat too large there. The excess probably comes from the all-hits
+  scaling, or from the less precise projection at low momentum (Sec.~\ref{sec:me}).
+\item \textbf{Tail above the proton.} For $1.6<m^2<2.8$\,GeV$^2$/$c^4$ (between p and d) the SE yield is \mtSbRatioAllVthree{}
+  times the random estimate in 0--80\% (2--9 times in 0--5\% above 0.6\,\GeVc, Table~\ref{tab:m2contam}). Random matches account for only a small
+  part of this tail.
+\end{itemize}
+
+\caveat{Most of the SE yield between the proton and deuteron peaks is not from random hits. Candidates: decays in
+flight (the track's $p$ does not belong to the particle that fired the cell), wrong primary vertex or out-of-time
+pile-up, and wrongly matched neighbour hits of the same event. Not studied.}
+
+\begin{table}[h]
+\centering
+\caption{Random-match fraction (\%) of the SE yield in the $\pi$ ($-0.1<m^2<0.1$), K ($0.17<m^2<0.33$) and p
+($0.6<m^2<1.2$\,GeV$^2$/$c^4$) windows, SE/ME ratio between the p and d peaks, and the largest ME/SE ratio over $m^2$ bins
+with $\ge50$ SE counts in $-0.3<m^2<3$. ME: overlay, all hits. Statistical errors not shown; they are large in
+70--80\% above 1\,\GeVc. Generated: \fpath{tables/m2_contam_v3.tex}.}
+\label{tab:m2contam}
+\small
+\input{tables/m2_contam_v3.tex}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\figpanel{1.0}{m2_v3_frand}{Random-match fraction under the $\pi$ (left), K (middle) and p (right) peaks vs momentum
+for 0--5\% (red), 10--20\% (orange), 30--40\% (green), 50--60\% (blue) and 70--80\% (violet). Points with fewer than
+100 SE counts in the window are omitted. ME: overlay, all hits.}
+\caption{Random fraction under the PID peaks.}
+\end{figure}
+
+\newcommand{\mtwocap}[1]{$m^2$ of projected QA tracks, #1, nine momentum bins (log scale, 0.04\,GeV$^2$/$c^4$ bins).
+Black points: same event (cell$\pm$1 rule, hit with time). Red filled: mixed event (overlay, all hits) normalized per
+projected track. Statistical errors on the SE points only.}
+
+\clearpage
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{m2_v3_cent8}{\mtwocap{0--5\%}}
+\caption{SE vs ME $m^2$, 0--5\%.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{m2_v3_cent4}{\mtwocap{30--40\%}}
+\caption{SE vs ME $m^2$, 30--40\%.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{m2_v3_cent0}{\mtwocap{70--80\%}}
+\caption{SE vs ME $m^2$, 70--80\%.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{m2_v3_allcent}{\mtwocap{0--80\% (sum of the nine classes)}}
+\caption{SE vs ME $m^2$, 0--80\%.}
+\end{figure}

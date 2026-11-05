@@ -1,0 +1,85 @@
+\section{Audit}
+\label{sec:audit}
+
+\subsection{Checks that passed}
+\begin{itemize}
+\item \textbf{MuDst production re-run:} \clNSame{} of \clNSame{} production matches reproduced in the same cell,
+  \clNOther{}/\clNOnlyProd{}/\clNOnlyRerun{} different/lost/new; time of flight median \clDtofMed\,ps
+  (\fpath{StTofClosureMaker}, \clEvents{} events, \fpath{scripts/make_probe.C}, \fpath{logs/probe_numbers.txt}).
+\item \textbf{MuDst emulation:} the emulated production choice picks the production hit for \muChoiceSame\% of the production
+  matches (\fpath{scripts/make_mu.C}, \muEvMtwo{} events).
+\item \textbf{Overlay bookkeeping:} matched fraction of QA tracks \ovSEMatch\% in the same event and \ovAnyMatch\% in
+  the overlays; \ovOwnLost\% of the same-event matches are replaced or lost (\fpath{scripts/make_ov.C}).
+\item \textbf{Code identity:} md5 sums of \fpath{StTofMEQAMaker.{h,cxx}}, \fpath{runTofMEQA.C} and
+  \fpath{drawTofMEQA.C} on the node equal those of the local copies (\fpath{logs/provenance.txt}, \fpath{logs/md5_local.txt}).
+  The library was rebuilt (\fcmd{cons}) before the run that produced \fpath{output/qa_test_10k.root}.
+\item \textbf{Event count:} \nProcEvents{} events processed out of \nChainEvents{} in the file, \nFilesRead{}
+  file read (run log, \fpath{logs/runinfo.txt}); the first bin of \fcmd{hEvtCut} equals the entries of
+  \fcmd{hVzAll} (\nEvtAll; \checkEvtAll).
+\item \textbf{Cut-flow consistency:} entries of \fcmd{hVz} (selected events) equal the last
+  applied cut-flow bin (\nEvtSel; \checkEvtSel); track counts in Table~\ref{tab:trkcut} decrease monotonically (\checkTrkFlow)
+  (\fpath{scripts/make_numbers.C}, full test sample).
+\item \textbf{Cell decoding:} no matched track points to a module without hits
+  (\nMatchedInEmpty{} entries), consistent with the same \fcmd{btofCellId}/\fcmd{id()} encoding for traits and hits.
+\item \textbf{PID scale:} fitted \mtwo{} peaks of $\pi$, K, p agree with PDG within 0.005\,GeV$^2/c^4$
+  (\fpath{scripts/make_numbers.C}, $0.4<p<1.0$\,\GeVc).
+\item \textbf{$z_{\rm local}$ window:} the edges at $\pm3.05$\,cm match \fcmd{mZLocalCut=3.05} in
+  \fpath{StRoot/StBTofMatchMaker/StBTofMatchMaker.cxx} of SL24y (source inspection).
+\item \textbf{API:} picoDst getters and compression factors were read from the SL24y
+  \fpath{StRoot/StPicoEvent} headers (source inspection).
+\item \textbf{Geometry fit:} mean fit residual \geoFitRmsTest\,cm over \geoNFitTest{} modules; rotated-copy closure
+  \geoClosureMeanTest\,cm mean (\fpath{macros/makeGeom.C}, \fpath{logs/makeGeom_test.log}).
+\item \textbf{Production neighbour rule:} the cell$\pm$1 acceptance and \fcmd{mWidthPad}=3.45\,cm were read in
+  \fpath{StBTofMatchMaker.cxx} (SL24y); the fitted pitch agrees.
+\item \textbf{Same input sample:} the mixed-event test selects the same \meEvtSelTest{} events as the QA. It has
+  \meNTrkQATest{} QA tracks, 77 fewer than the QA maker (\nTrkEta), because the test build compared
+  nHitsFit/nHitsMax with the double 0.52 instead of the float 0.52 used in the QA maker (tracks with ratio exactly
+  13/25 were dropped). Fixed before the 1M-event productions.
+\item \textbf{1M merge:} all \meNJobsVthree{} job logs end normally and contain the maker summary; the merged file has
+  \meEvtAllVthree{} events read (\fpath{scripts/merge_v3.sh}, \fpath{logs/hadd_v3.log}); the job file lists contain no
+  duplicate file (checked on the node).
+\item \textbf{Path length and $m^2$:} for tracks whose production hit is chosen, $L$ agrees with $\beta_{\rm prod}c\,t_{\rm prod}$
+  (mean \mtDLMeanVthree\,cm, RMS \mtDLRmsVthree\,cm) and $m^2$ with production (RMS \mtDmRmsVthree\,GeV$^2$/$c^4$)
+  (\fcmd{hDLVsP}, \fcmd{hDm2VsP}, \fpath{scripts/make_m2.C}).
+\item \textbf{Production hit choice:} largest ToT among candidate cells, then closest $y$, read in
+  \fpath{StBTofMatchMaker.cxx} (SL24y, lines 782--833).
+\item \textbf{Background diagnostics:} every v4--v8 job log ends normally; all passes read the same \meEvtAllVthree{} events
+  (v6: 25\,000 per run) (\fpath{scripts/merge_v4.sh}--\fpath{merge_v8.sh}).
+\item \textbf{Overlay ME does not exceed SE:} largest ME/SE over $m^2$ bins is \mtValleyAllVthree{} in 0--5\%,
+  $0.4<p<1.5$\,\GeVc{}, against \mtValleyPlainMinVthree--\mtValleyPlainMaxVthree{} without overlay (\fpath{scripts/make_m2.C}).
+  It reaches 1.21 at $0.2<p<0.4$\,\GeVc{} (Table~\ref{tab:m2contam}).
+\item \textbf{$P_{\rm ME}$ = occupancy:} slope of $P_{\rm ME}$ vs $N_{\rm hits}$ is \meSlopeRatioTest{} times $1/23040$
+  (\fpath{scripts/make_me.C}, test sample).
+\end{itemize}
+
+\subsection{Not verified (assumptions)}
+\begin{itemize}
+\item MuDst: the database time stamp of the re-run is not pinned to the production; the residual ps-level differences
+  are attributed to later calibration updates (not checked).
+\item MuDst: the restore of the event hit array after each overlay is not tested directly; the overlay matched fraction
+  (\ovAnyMatch\% vs \ovSEMatch\%) is consistent with it.
+\item MuDst: \ovEvMtwo{} (overlay) and \muEvMtwo{} (emulation) events are used; the difference comes from the start-time
+  requirement (VPD start vs own $T_0$), not checked event by event.
+\item MuDst: the statement that the overlay ME follows the SE shape and that the pion-side spike disappears is read by eye
+  (Fig.~\ref{fig:ov_m2_cent}); \fpath{tables/m2_v9.tex} is a stored output of \fpath{scripts/make_m2.C}, not regenerated by
+  \fpath{build.sh}.
+\item Minimum-bias trigger IDs other than 640051 (not present in the test file).
+\item That the picoDst keeps all BTOF hits of an event (only inferred from equal mean/RMS of
+  hit count and \fcmd{btofTrayMultiplicity}).
+\item Meaning of trigger IDs 6, 35, 36, 37 and the 6406xx/6408xx IDs.
+\item Representativeness of run 20093036 for the dataset; no run-by-run QA.
+\item Catalog file/event counts are copied from the catalog query output in \fpath{logs/catalog_P24iy.txt}.
+\item The availability of NFS replicas was checked only for the latest runs (first 3000 catalog
+  entries ordered by run number), not for the whole list.
+\item The geometry is fitted and the ME test is run on the same events (test sample). For the 1M sample the
+  refitted geometry agrees with it to \geoCmpMeanVthree\,cm (\fpath{scripts/make_me_runs.C}), so this is checked for the runs used.
+\item The time distribution of BTOF hits without a stored time (\mtMETimedFracVthree\% of the chosen partner hits have one)
+  is the same as for timed hits (all-hits normalization of Sec.~\ref{sec:m2}).
+\item StRefMultCorr centrality and pile-up definitions for Run19 19.6\,GeV were used as provided (not re-derived).
+\item ToT of a hit is independent of its origin (equal-chance emulation, Sec.~\ref{sec:bkg}); earliest time as a ToT proxy.
+\item The growth of the BTOF hit multiplicity between 70--80\% and 0--5\% is taken from refMult, not computed per class.
+\item Shape statements on the $m^2$ overlays (position of the random peak, where ME follows SE) are read by eye.
+\item Mixed-event independence of random hits on the track (no correlation of noise or afterpulses with real hits).
+\item Visual statements (shape of $y_{\rm local}$ tails, $\phi$ dip near $-0.6$, $\eta$ dip of the
+  efficiency at $\eta\approx0$) are read from the figures, not fitted.
+\end{itemize}

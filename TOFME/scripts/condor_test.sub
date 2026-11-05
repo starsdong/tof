@@ -1,0 +1,12 @@
+# single short test job: condor + apptainer + XRootD + root4star in batch
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = "scripts/run_me.sh 300 filelists/me_1M/job_000.list output/condor_test.root logs/condor_test.log '' 5"
+output           = logs/condor_test.out
+error            = logs/condor_test.err
+log              = logs/condor_test.condorlog
+accounting_group = group_star.cas
+request_memory   = 2000
+getenv           = false
+queue

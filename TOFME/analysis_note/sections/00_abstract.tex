@@ -1,0 +1,30 @@
+\begin{abstract}
+\noindent This note documents the TOFME project, whose goal is a mixed-event
+estimate of random (fake) matches between TPC tracks and Barrel Time-of-Flight (BTOF) hits in STAR.
+The input is the latest Run19 Au+Au 19.6 GeV production (P24iy, library SL24y).
+First, a QA analysis of the picoDst content was set up and run:
+event-level, TPC-track-level and TPC--BTOF-association variables, including $1/\beta$ and
+\mtwo{} versus momentum, local hit coordinates, tray/module occupancy and the TOF matching efficiency.
+Then the mixed-event machinery was built (Sec.~\ref{sec:me}): a data-driven BTOF module geometry, projection of
+the picoDst helix of every track to a BTOF cell, and cell-level matching to hits of the same and of mixed events.
+For the production-like matching rule (projected cell or its neighbour), a random hit is present in the matching cells
+for \mePMENbpctVthree\% of the tracks, equal to the hit occupancy (1M-event sample, \meNRunsVthree{} runs,
+\meEvtSelVthree{} selected events; stable from run to run once scaled by the occupancy; Sec.~\ref{sec:me1m}).
+Finally (Sec.~\ref{sec:m2}), $\beta$ and \mtwo{} are computed for same-event and mixed-event matches in nine
+centrality classes. The mixed events are overlaid on the track's own event, normalized per projected track, and include
+hits without a stored time. Random matches are then \mtMENormFracCiVthree\% of the TOF-matched tracks in 0--5\% and
+\mtMENormFracCaVthree\% in 70--80\%, and \mtFrPiMidCiVthree\% ($\pi$), \mtFrKMidCiVthree\% (K) and \mtFrPMidCiVthree\% (p) of
+the yield under the PID peaks in 0--5\% at $0.8<p<1$\,\GeVc. They explain only a small part of the yield between the
+proton and deuteron peaks, because the picoDst has no time for BTOF hits not matched to a track.
+On MuDst (Sec.~\ref{sec:mudst}), where all hits have a time, the production BTOF matching and calibration re-run on MuDst
+reproduce production exactly. Two mixed events that use all hits then describe the same-event background between the
+p and d peaks (SE/ME = \muHiProdCi{} and \ovHiCi{} in 0--5\%). Random matches are \muFrProdCi\% (central) to \ovFrCi\%
+(upper bound) of the TOF matches in 0--5\% and \muFrProdAll--\ovFrAll\% in 0--80\% (four MuDst files of two runs).
+\textbf{Limitations:} the QA sections (\ref{sec:evtqa}--\ref{sec:tofqa}) use a \emph{test sample} of \nProcEvents{} events from one
+picoDst file of a single run (20093036); the mixed-event results use 15 runs. No bad-tray list is applied.
+The time of random hits without a stored time is an assumption in the picoDst sections (Sec.~\ref{sec:m2}); the MuDst
+results use \ovEvMtwo{} events only. Statistical uncertainties only.
+Coloured boxes: \textcolor{blue!60!black}{\textbf{blue}} = a choice made and its reason;
+\textcolor{red!70!black}{\textbf{red}} = caveat / not yet understood;
+\textcolor{orange!80!black}{\textbf{orange}} = decision needed from the analyser.
+\end{abstract}

@@ -1,0 +1,17 @@
+\section{Glossary}
+\label{sec:glossary}
+\begin{description}\itemsep0pt
+\item[BTOF] Barrel Time-of-Flight: 120 trays $\times$ 32 MRPC modules $\times$ 6 pads (cells), $|\eta|\lesssim0.9$.
+\item[VPD] Vertex Position Detector; start time and $V_z^{\rm VPD}$.
+\item[picoDst] STAR compact analysis format (\fpath{StRoot/StPicoEvent}).
+\item[refMult / gRefMult] Reference multiplicity from primary / global tracks in $|\eta|<0.5$.
+\item[nBTOFMatch] Number of primary tracks matched to BTOF (stored per event).
+\item[btofTrayMultiplicity] Number of BTOF hits in the event (stored per event).
+\item[btofMatchFlag] 0 no match, 1 one-to-one, 2 one hit shared by several track candidates.
+\item[$y_{\rm local}$, $z_{\rm local}$] Track projection relative to the centre of the matched pad.
+\item[gDCA] Distance of closest approach of the global track to the primary vertex.
+\item[$\varepsilon_{\rm match}$] TOF-matched ($\beta>0$) QA tracks divided by all QA tracks.
+\item[$P_{\rm SE}$, $P_{\rm ME}$] Probability of a hit in the projected cell (or cell$\pm$1) in the same / a mixed event.
+\item[$f_{\rm rand}$] $P_{\rm ME}/P_{\rm SE}$, estimated random fraction of same-event matches.
+\item[Mixed event] Pairing tracks of one event with BTOF hits of another event of similar class.
+\end{description}

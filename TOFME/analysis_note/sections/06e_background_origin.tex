@@ -1,0 +1,167 @@
+\subsection{Origin of the same-event background in $m^2$}
+\label{sec:bkg}
+
+Sec.~\ref{sec:m2} found that the overlay mixed event does not describe the same-event (SE) $m^2$ away from the peaks.
+In particular, the SE yield between the proton and deuteron peaks ($1.6<m^2<2.8$\,GeV$^2$/$c^4$, called HI below)
+is several times larger than the mixed-event (ME) estimate. This section reports the study of that mismatch.
+It uses four extra passes of \fpath{StRoot/StTofMEMaker} over the same 15 runs and events as Sec.~\ref{sec:me1m}:
+\begin{itemize}
+\item v4: SE and ME split by 12 track, event and hit variables;
+\item v5: the same quantities per projected BTOF cell;
+\item v6: details of neighbour-cell matches, on the first 25\,000 events of each run;
+\item v7, v8: two emulations of the production hit choice.
+\end{itemize}
+Scripts: \fpath{scripts/make_bkg.C}, \fpath{make_cell.C}, \fpath{make_nb.C}, \fpath{make_m2.C}, \fpath{make_late.C};
+logs \fpath{logs/bkg_v4.txt}, \fpath{cell_v5.txt}, \fpath{nb_v6.txt}, \fpath{m2_numbers_v7.txt}, \fpath{m2_numbers_v8.txt},
+\fpath{late_v8.txt}. All comparisons are for 0--80\% centrality unless stated otherwise.
+
+\subsubsection{Where the HI excess is}
+Table~\ref{tab:bkgcat} lists the HI yield per $10^4$ projected tracks for SE and for the overlay ME of
+Sec.~\ref{sec:m2}, split by each variable.
+\begin{itemize}
+\item \textbf{No dependence:} the SE/ME ratio does not depend on the difference between the TPC and VPD vertex
+  ($\approx6$ in every class, including events without a VPD vertex), on $|z_{\rm local}|$, on $\eta$ or on the track
+  charge. This rules out start-time errors and event pile-up as the main source
+  (Fig.~\ref{fig:bkg_v4_k1_p08}, \ref{fig:bkg_v4_k11_p08}).
+\item \textbf{Mild dependence:} the ratio rises with the DCA ($5.9\to9.0$) and is larger for short tracks.
+  Tracks with $n\sigma_{\rm p}>8$ (light-nucleus candidates) show a strong excess, but they are a small share.
+\item \textbf{Strong dependence, the chosen cell:} the HI excess comes from tracks matched to a hit in a
+  \emph{neighbouring} cell (Fig.~\ref{fig:bkg_v4_k7_p08}). Neighbour-cell matches are 6\% of the SE matches but
+  \nbShareHI\% of the SE HI entries (v6). SE/ME in the HI window is 10.5 for them and 2.0 for projected-cell matches.
+\end{itemize}
+
+The neighbour-cell excess is not caused by dead or inefficient cells. Cells with an efficiency above 0.8 (79\% of the
+projected tracks) carry \clShared\%+\clSharee\% of the HI entries, and cells below 0.5 carry about 1\%
+(Table~\ref{tab:celleff}, Fig.~\ref{fig:cell_v5_eff}). It is not a projection effect either.
+The rate of HI neighbour matches is about $7\times10^{-4}$ per SE match whether the track crosses the centre or the
+edge of the projected cell (Fig.~\ref{fig:nb_v6}). At the centre the neighbour cell is $\ge1.7$\,cm away, against a
+projection precision of about 0.05\,cm at these momenta. Finally, in \nbStUntN{} of the \nbStTotN{}
+neighbour matches (v6, $0.6<p<1.5$\,\GeVc) the projected cell \emph{did} contain a hit, but that hit has no time in
+the picoDst: production did not match it to any track and gave our track the neighbour hit instead.
+The HI fraction of these matches is \nbStUntHIPK{} per mille of the peak yield, against \nbStEmptyHIPK{} per mille when
+the projected cell was empty.
+
+\begin{table}[H]
+\centering
+\caption{HI yield ($1.6<m^2<2.8$\,GeV$^2$/$c^4$) per $10^4$ projected tracks for SE and overlay ME (projected cell
+first, all hits), by category. ``share'' is the category's share of all SE matches.
+$^{*}$Hit variables: absolute counts instead of rates, because projected tracks cannot be assigned to them.
+Generated: \fpath{tables/bkg_cat_v4.tex}.}
+\label{tab:bkgcat}
+\scriptsize
+\input{tables/bkg_cat_v4.tex}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{HI yield by cell efficiency $\varepsilon_c$ (fraction of tracks projected to the cell for which the cell
+has a hit), $0.6<p<3$\,\GeVc. ``nb.\ match'': share of the projected tracks matched to a neighbour cell.
+Generated: \fpath{tables/cell_eff_v5.tex}.}
+\label{tab:celleff}
+\small
+\input{tables/cell_eff_v5.tex}
+\end{table}
+
+\subsubsection{Production chooses among several hits by ToT}
+In \fcmd{StBTofMatchMaker} (SL24y, lines 782--833) a track with hits in more than one candidate cell (projected cell
+and neighbours) is matched to the hit with the \emph{largest ToT} (match flag 2). Only for equal ToT is the hit
+closest in $y$ used (flag 3). So a random hit in a neighbour cell can take the place of the track's own hit. The overlay
+ME of Sec.~\ref{sec:m2} always kept the own hit in the projected cell and therefore misses these cases. The picoDst
+has no ToT, so two emulations were run:
+\begin{itemize}
+\item \textbf{Equal chance} (v7): ToT independent of the hit's origin. Each of the hits in the candidate cells,
+  from this event and from the partner, wins with probability $1/(n_A+n_B)$. Untimed partner hits are included
+  through the scaling of Sec.~\ref{sec:m2}.
+\item \textbf{Earliest time wins} (v8; ToT replaced by the time, smaller time wins): the hit chosen for the track in
+  this event competes with the timed partner hits in the candidate cells. Untimed partner hits cannot take part.
+\end{itemize}
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+ & proj.\ cell first & equal chance & earliest time \\
+\midrule
+random matches / SE matches, 0--80\% (\%) & \mtMENormFracVthree & \mtMENormFracVseven & \mtMENormFracVeight \\
+\quad 0--5\% (\%) & \mtMENormFracCiVthree & \mtMENormFracCiVseven & \mtMENormFracCiVeight \\
+\quad 70--80\% (\%) & \mtMENormFracCaVthree & \mtMENormFracCaVseven & \mtMENormFracCaVeight \\
+max ME/SE per $m^2$ bin, 0--5\%, $0.4<p<1.5$ & \mtValleyAllVthree & \mtValleyAllVseven & \mtValleyAllVeight \\
+SE/ME, HI window, 0--80\%, $0.2<p<3$ & \mtSbRatioAllVthree & \mtSbRatioAllVseven & \mtSbRatioAllVeight \\
+\bottomrule
+\end{tabular}
+\end{center}
+Under the peaks in 0--5\% at $0.8<p<1$\,\GeVc{} the random fraction is \mtFrPiMidCiVseven\% ($\pi$), \mtFrKMidCiVseven\% (K) and
+\mtFrPMidCiVseven\% (p) with equal chance, and \mtFrPiMidCiVeight\%, \mtFrKMidCiVeight\% and \mtFrPMidCiVeight\% with the earliest-time
+rule (Figs.~\ref{fig:m2_v7_cent8}, \ref{fig:m2_v8_cent8}).
+\begin{itemize}
+\item Equal chance roughly doubles the random matches. It describes the HI region above $p\approx0.8$\,\GeVc, but it
+  exceeds the SE yield in the valleys next to the peaks by up to a factor \mtValleyAllVseven, which is impossible.
+  The track's own hit must therefore win more often than an equal-chance draw gives.
+\item Earliest time wins never exceeds the SE yield (largest ratio \mtValleyAllVeight). By construction, though, a random
+  hit wins only when it is earlier than the own hit, so it fills the low-$m^2$ side and leaves the HI excess
+  (SE/ME = \mtSbRatioAllVeight).
+\item Production selects on ToT, not on time, so the two emulations bracket the in-time random matches that come from
+  hits with a time: \mtMENormFracCiVeight--\mtMENormFracCiVseven\% of the TOF matches in 0--5\%.
+\end{itemize}
+
+\subsubsection{A late component flat in time}
+In time units the HI excess is a nearly flat plateau. Between 16 and 26\,ns after the pion arrival time the SE rate
+falls only slowly, while the ME falls by about a factor 4. Only 0.45\% of the hits that have a time in the picoDst arrive
+later than 25\,ns. The plateau hits must therefore be among the hits without a time, i.e.\ hits that production did
+not match to any track in their own event. Such a hit enters the SE when production matches it to the track under
+study, because the track's BTofPidTraits then carries its time. In a partner event it has no time and cannot give an
+$m^2$, so no picoDst-based mixed event can contain it.
+
+The plateau rate per projected track (Fig.~\ref{fig:late_v8}) rises only from \lateHiPer{} to \lateHiCen{} hits per ns
+per $10^6$ tracks (factor \lateHiRatio) from 70--80\% to 0--5\% for $0.6<p<1.5$\,\GeVc, and from \lateLoPer{} to \lateLoCen{}
+(factor \lateLoRatio) for $0.2<p<0.6$\,\GeVc. The BTOF hit multiplicity, which follows refMult (Fig.~\ref{fig:evt_refmult_vs_tofmult}), grows by more
+than an order of magnitude over the same range (read from the refMult range of the classes, not computed per class).
+Most of the plateau is therefore unrelated to the triggered collision: electronic noise or
+hits from other bunch crossings in the TOF readout window.
+
+\caveat{The picoDst cannot provide a complete mixed-event description of random matches: (1) it has no ToT, so the
+production choice among several hits can only be bracketed; (2) 65\% of the BTOF hits have no time, among them the flat
+late component. Both are available in the MuDst (\fcmd{StMuBTofHit}), where every hit has a time and a ToT; a MuDst
+test is being set up (Sec.~\ref{sec:open}).}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.98}{bkg_v4_k7_p08}{SE (points) and overlay ME (red) $m^2$, $0.8<p<1.5$\,\GeVc, 0--80\%, for hits in the projected
+cell (left) and in a neighbour cell (right). Per $10^4$ projected tracks is not defined for hit categories; ME is normalized
+per projected track in total.}
+\\[1ex]
+\figpanel{0.98}{bkg_v4_k1_p08}{Same, split by $|V_z-V_z^{\rm VPD}|$: $<3$, 3--6, $>6$\,cm and no VPD vertex. ME normalized per
+projected track of each class.}
+\\[1ex]
+\figpanel{0.49}{bkg_v4_k11_p08}{Same, split by charge.}
+\hfill
+\figpanel{0.49}{cell_v5_eff}{Distribution of the cell efficiency $\varepsilon_c$ ($0.6<p<3$\,\GeVc), log scale.}
+\caption{Background diagnostics (v4, v5).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.98}{nb_v6}{Left: HI entries per $10^4$ SE matches vs $|y_{\rm local}|$ of the projection for SE (black) and overlay
+ME (red), and the share of neighbour-cell matches (open blue, \%). Right: production $y_{\rm local}$ of own neighbour hits
+(read by eye; the quantity is not used in the conclusions).}
+\\[1ex]
+\figpanel{0.6}{late_v8}{SE hits arriving 16--26\,ns after the pion time, per ns and per $10^6$ projected tracks, vs centrality
+class, for $0.2<p<0.6$ (blue) and $0.6<p<1.5$\,\GeVc{} (red).}
+\caption{Neighbour-cell matches (v6) and the late plateau (v8).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{m2_v7_cent8}{$m^2$ of projected QA tracks, 0--5\%, nine momentum bins (log scale). Black: same event.
+Red filled: overlay ME with the equal-chance production choice, all hits, normalized per projected track. Blue dashed: overlay
+ME with the projected cell first (Sec.~\ref{sec:m2}).}
+\caption{SE vs ME $m^2$, 0--5\%, equal chance.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{m2_v8_cent8}{$m^2$ of projected QA tracks, 0--5\%, nine momentum bins (log scale). Black: same event.
+Red filled: overlay ME with the earliest time winning, timed partner hits only, normalized per projected track. Blue dashed:
+equal-chance choice.}
+\caption{SE vs ME $m^2$, 0--5\%, earliest time wins.}
+\end{figure}

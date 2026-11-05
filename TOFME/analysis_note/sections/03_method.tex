@@ -1,0 +1,81 @@
+\section{Method and definitions}
+\label{sec:method}
+
+The QA maker loops over picoDst events; per event it (i) records trigger IDs and the vertex before any
+cut, (ii) applies the event selection, (iii) fills event-level and BTOF-hit histograms,
+(iv) loops over tracks applying the track selection and fills track and TOF histograms.
+All histograms are written to one ROOT file (\fpath{output/qa_test_10k.root}).
+
+\subsection{Event selection}
+\label{sec:evtcuts}
+Cuts are applied in the order listed; the cut flow is stored in \fcmd{hEvtCut}.
+\begin{enumerate}
+\item \textbf{Trigger:} the event fires at least one of 640001, 640011, 640021, 640031, 640041, 640051
+  (\fcmd{StPicoEvent::isTrigger}).
+\item \textbf{Vertex $z$:} $|V_z|<70$\,cm, with $V_z$ the TPC primary vertex (\fcmd{primaryVertex()}).
+\item \textbf{Vertex radius:} $V_r=\sqrt{V_x^2+V_y^2}<2$\,cm, measured from the origin of the STAR frame (no beam-spot offset).
+\item $|V_z-V_z^{\rm VPD}|$: \emph{not applied} (cut value set negative), only histogrammed.
+\end{enumerate}
+
+\choice{The trigger list is taken as the Run19 19.6\,GeV minimum-bias offline trigger IDs
+(640001--640051 in steps of 10). This list was \emph{not} checked against the trigger database;
+only 640051 occurs in the test file (Table~\ref{tab:trigger}), so the other IDs are untested here.}
+
+\choice{$|V_z|<70$\,cm keeps the vertex well inside the TPC and BTOF acceptance and is a typical value
+for collider-mode BES-II analyses. $V_r<2$\,cm rejects beam-pipe interactions. Both are QA defaults,
+not optimised.}
+
+\caveat{The $V_z^{\rm TPC}-V_z^{\rm VPD}$ cut, often used against pile-up, is not applied because at
+19.6\,GeV the VPD efficiency and resolution are limited (Sec.~\ref{sec:evtqa}). Pile-up rejection
+(e.g.\ refMult versus nBTOFMatch) is also not applied yet.}
+
+\subsection{Track selection}
+\label{sec:trkcuts}
+Tracks are taken from the picoDst track array; for each track:
+\begin{enumerate}
+\item \textbf{Primary} track (\fcmd{isPrimary()}, i.e.\ $|\vec p_{\rm prim}|>0$), $p_T^{\rm prim}>0.15$\,\GeVc.
+  Histograms of nHitsFit, nHitsFit/nHitsMax and gDCA are filled here, \emph{before} the next cuts.
+\item \textbf{Quality:} nHitsFit $\ge 15$, nHitsFit/nHitsMax $>0.52$ (rejects split tracks),
+  gDCA $<3$\,cm with gDCA = $|\vec{\rm origin}_{\rm global} - \vec V|$ (\fcmd{gDCA(pv).Mag()}).
+  The $\eta$ histogram is filled here.
+\item \textbf{Acceptance:} $|\eta|<1$ (BTOF acceptance). All remaining track and TOF histograms use
+  this sample, which is also the denominator of the matching efficiency.
+\end{enumerate}
+Track kinematics ($p$, $p_T$, $\eta$, $\phi$) use the \emph{primary} momentum, and the charge $q$ is
+the sign of nHitsFit as stored in the picoDst.
+
+\subsection{TPC--BTOF association variables}
+\label{sec:tofdef}
+A track is \emph{associated} with BTOF if it has a \fcmd{StPicoBTofPidTraits} entry
+(\fcmd{isTofTrack()}). From it the following are used:
+\begin{itemize}
+\item \fcmd{btofMatchFlag}: 0 no match, 1 one-to-one, 2 one hit with several track candidates.
+  \textbf{Matched} means flag $>0$.
+\item \fcmd{btofCellId} $=(\mathrm{tray}-1)\cdot192+(\mathrm{module}-1)\cdot6+(\mathrm{cell}-1)$;
+  tray $\in[1,120]$, module $\in[1,32]$, cell $\in[1,6]$.
+\item $y_{\rm local}$, $z_{\rm local}$: local coordinates of the track projection relative to the centre
+  of the matched cell; $y$ is along the row of six pads in a module (nominal pad pitch 3.15\,cm),
+  $z$ is along the beam (nominal pad length 6.1\,cm). The production matching
+  (\fcmd{StBTofMatchMaker}, SL24y) requires $|z_{\rm local}|<3.05$\,cm (\fcmd{mZLocalCut}, checked in the source).
+\item global hit position \fcmd{btofHitPos()} (used for the $\phi$--$z$ map);
+\item $\beta$ = \fcmd{btofBeta()}. Matched tracks without valid timing have $\beta=0$.
+\end{itemize}
+Derived quantities, with $p$ the primary momentum:
+\begin{equation}
+m^2 = p^2\left(\frac{1}{\beta^2}-1\right), \qquad
+\frac{1}{\beta_{\rm exp}^{i}}=\frac{\sqrt{p^2+m_i^2}}{p}, \qquad
+n\sigma^{\rm TOF}_i=\frac{1/\beta-1/\beta^{i}_{\rm exp}}{0.013}, \quad i=\pi,{\rm K},{\rm p}.
+\end{equation}
+The \textbf{TOF-matched sample} (numerator of the efficiency) requires flag $>0$ and $\beta>0$.
+The matching efficiency is $\varepsilon_{\rm match}=N_{\rm TOF}/N_{\rm TPC}$, with binomial (Bayesian,
+uniform prior, 68\% interval) errors in the figures and $\sqrt{\varepsilon(1-\varepsilon)/N}$ in the tables.
+
+\caveat{$n\sigma^{\rm TOF}$ here uses a constant $1/\beta$ resolution of 0.013 for orientation only;
+it is not the calibrated $n\sigma$ stored in \fcmd{StPicoBTofPidTraits}. $\varepsilon_{\rm match}$ is
+the product of the BTOF geometric acceptance, the hit efficiency and the matching efficiency, and still
+contains random matches --- separating those is the aim of the mixed-event step.}
+
+\paragraph{BTOF hits.} For every stored \fcmd{StPicoBTofHit} the tray, module and cell are decoded
+from \fcmd{id()} with the encoding above. Note that \fcmd{StPicoBTofHit::cell()} in SL24y returns
+\fcmd{mId/6+1} rather than the cell number; the maker computes \fcmd{id\%6+1} itself.
+The picoDst stores only the cell ID of each hit, not its position or time.

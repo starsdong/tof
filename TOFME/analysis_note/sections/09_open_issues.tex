@@ -1,0 +1,18 @@
+\section{Open issues}
+\label{sec:open}
+Ordered by importance for the next step.
+\begin{enumerate}
+\item [decision] Matching rule for the final correction (cell$\pm$1 vs cell) and mixing classes.
+\item Improve the low-$p_T$ projection (energy loss, or outer helix not available in picoDst).
+\item Translate $P_{\rm ME}$ into a random-match correction of the TOF-matched yield and \mtwo{} background
+  (needs the time of the random hit, not stored in picoDst).
+\item [decision] MuDst random-match result: central value (emulation with partner-track claims) vs the production re-run on
+  overlaid hits, which lacks the partner tracks (Sec.~\ref{sec:mudst}). Next: add the partner tracks to the overlay.
+\item MuDst statistics: restore of 98 files of 14 runs requested (\fpath{filelists/mudst/restore_100.txt}); one job per file.
+  Run 20088015 needs a workaround for the trigger-data decoding errors.
+\item Understand the slight $p_T$ dependence of $P_{\rm ME}$ seen in the 1M sample.
+\item Process the three removed files (030, 033, 040) if the full 57-file sample is needed.
+\item [decision] Confirm the trigger list and decide on VPD-vertex and pile-up cuts.
+\item Scale beyond 1M events if needed (one HTCondor job per run, about 70k events in 35--40 min; avoid the qgp017 server).
+\item Understand the reduced TPC track density near $\phi\approx-0.6$, $\eta>0$.
+\end{enumerate}

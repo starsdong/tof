@@ -1,0 +1,14 @@
+# HTCondor submission for the TOFME mixed-event run (one run (>= 60k events) per job, v3 with m2 + overlay ME).
+# submit from /gpfs01/star/pwg/dongx/tof/TOFME:  condor_submit scripts/me_v5.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/run_me.sh -1 filelists/me_v3/job_$(jobid).list output/me_v5/me_$(jobid).root logs/me_v5/me_$(jobid).log $(geom) 5
+output           = logs/me_v5/condor_$(jobid).out
+error            = logs/me_v5/condor_$(jobid).err
+log              = logs/me_v5/condor.log
+accounting_group = group_star.cas
+request_memory   = 3000
+getenv           = false
+geom             = geom/btof_geom_v3.txt
+queue jobid from filelists/me_v3_jobids.txt

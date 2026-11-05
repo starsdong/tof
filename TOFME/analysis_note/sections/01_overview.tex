@@ -1,0 +1,70 @@
+\section{Overview}
+\label{sec:overview}
+
+\paragraph{Goal of the project.} Estimate the probability that a TPC track is matched to a BTOF hit
+that it did not produce, by pairing tracks with BTOF hits from \emph{different} events of similar
+topology (mixed events). This first step establishes the data access, software environment and
+a QA baseline for the quantities the mixed-event study will use.
+
+\paragraph{Main findings (test sample, \nEvtSel{} selected events).}
+\begin{itemize}
+\item Event selection keeps \nEvtSel{} of \nEvtAll{} events (\fracSel\%); the $|V_z|<70$\,cm cut
+  dominates the loss (Table~\ref{tab:evtcut}). \nEvtTrig{} events carry the minimum-bias trigger 640051.
+\item Mean refMult is \meanRefMult; mean number of BTOF hits stored per event is \meanNBTofHits,
+  i.e.\ \hitsPerMatched{} BTOF hits per TOF-matched primary track (\perEvtTrkBeta{} per event).
+  The number of matched tracks and of BTOF hits are strongly correlated (correlation factor \corrTofTrkHits).
+\item Track selection (Table~\ref{tab:trkcut}): \nTrkEta{} primary tracks enter the QA sample
+  (\perEvtTrkEta{} per event); \nTrkBeta{} of them have a BTOF match with valid $\beta$.
+\item TOF matching efficiency (matched with $\beta>0$ / TPC tracks) is \effMid{} for $0.5<p_T<1.5$\,\GeVc,
+  \effLow{} for $0.15<p_T<0.3$\,\GeVc, \effEtaCentral{} for $|\eta|<0.5$ and \effEtaOuter{} for $0.5<|\eta|<1$.
+\item \mtwo{} peaks (for $0.4<p<1.0$\,\GeVc) are at \mTwoMeanPi, \mTwoMeanK{} and \mTwoMeanP{}\,GeV$^2/c^4$
+  for $\pi$, K, p, consistent with PDG values within 0.005\,GeV$^2/c^4$.
+\item \fracFlagTwo\% of matched tracks have \fcmd{btofMatchFlag}=2 (one hit, several track candidates).
+\item Mixed events (Sec.~\ref{sec:me}): the module geometry fitted from production matches reproduces the
+  production projection points to \geoFitRmsTest\,cm. With the picoDst helix, \meFracPMCellHiTest\% of production matches above
+  1.5\,\GeVc{} are projected to the same cell. The random-match probability is \mePMENbpctTest\% (cell$\pm$1, production-like)
+  and \mePMEpctTest\% (cell only), proportional to the number of BTOF hits in the event; it amounts to
+  \meFakeMidNbTest\% of same-event matches for $0.5<p_T<2$\,\GeVc.
+\item 1M-event sample (\meNRunsVthree{} runs, Sec.~\ref{sec:me1m}): $P_{\rm ME}$ = \mePMENbpctVthree\% (cell$\pm$1),
+  $f_{\rm rand}$ = \meFakeMidNbVthree\% for $0.5<p_T<2$\,\GeVc; per-run $P_{\rm ME}$ divided by the occupancy stays within
+  \mePMEoccMinVthree--\mePMEoccMaxVthree; the geometry refitted on 1M events agrees with the test-run geometry to \geoCmpMeanVthree\,cm.
+\item $m^2$ (Sec.~\ref{sec:m2}): with the hit time taken from the picoDst matches and the production path-length formula,
+  the same-event $m^2$ reproduces production (RMS difference \mtDmRmsVthree\,GeV$^2$/$c^4$). Mixed events overlaid on the
+  track's own event, normalized per projected track and including hits without stored time, give random matches equal to
+  \mtMENormFracCiVthree\% of the TOF matches in 0--5\% and \mtMENormFracCaVthree\% in 70--80\%. In 0--5\% at $0.8<p<1$\,\GeVc{}
+  they are \mtFrPiMidCiVthree\% ($\pi$), \mtFrKMidCiVthree\% (K) and \mtFrPMidCiVthree\% (p) of the yield under the peaks.
+  They explain only a small part of the SE yield between the proton and deuteron peaks (SE/ME = \mtSbRatioAllVthree).
+\item Background origin (Sec.~\ref{sec:bkg}): the SE excess between the p and d peaks comes from neighbour-cell matches
+  (\nbShareHI\% of it), not from dead cells, start time or pile-up. Production picks the largest-ToT hit among the projected
+  and neighbour cells, so random hits can replace the track's own hit. Emulating this choice in picoDst (no ToT) brackets the
+  in-time random matches at \mtMENormFracCiVeight--\mtMENormFracCiVseven\% of the TOF matches in 0--5\%. A late component flat in
+  time, weakly dependent on centrality, has no time in the picoDst and cannot be mixed; this needs the MuDst.
+\item MuDst (Sec.~\ref{sec:mudst}, \ovEvMtwo{} events of two runs): unmatched BTOF hits are \prUnmatchedFrac\% of all hits
+  and much later than matched ones (\prUlate\% vs \prMlate\% above 26\,ns): slow, unreconstructed particles. Re-running
+  \fcmd{StBTofMatchMaker}/\fcmd{StBTofCalibMaker} on MuDst reproduces all \clNSame{} production matches of the closure test
+  (time of flight to \clDtofMed\,ps median). Emulation with partner-track claims: random matches \muFrProdCi\% (0--5\%),
+  \muFrProdAll\% (0--80\%), SE/ME between p and d \muHiProdCi. Production makers re-run on overlaid hits (partner tracks
+  absent, upper bound): \ovFrCi\% and \ovFrAll\%, SE/ME \ovHiCi.
+\item Occupancy: trays \deadTrayList{} have no hits at all; \nDeadModule{} of 3840 modules
+  (\fracDeadModule\%) are empty. No matched track points to an empty module.
+\end{itemize}
+
+\paragraph{Choices made (one line each; details where used).}
+\begin{enumerate}
+\item Production P24iy (latest of P21ic, P23id, P24iy in the file catalog) --- Sec.~\ref{sec:data}.
+\item Input read through XRootD from the \texttt{local} storage replicas; the NFS catalog replicas
+  checked were absent on disk --- Sec.~\ref{sec:data}.
+\item STAR library SL24y run inside the SL7 container on the AlmaLinux~9 interactive node --- Sec.~\ref{sec:software}.
+\item Minimum-bias trigger IDs 640001/11/21/31/41/51 --- Sec.~\ref{sec:evtcuts}.
+\item Event cuts $|V_z|<70$\,cm, $V_r<2$\,cm; no $V_z^{\rm TPC}-V_z^{\rm VPD}$ cut --- Sec.~\ref{sec:evtcuts}.
+\item Track cuts: primary, $p_T>0.15$\,\GeVc, nHitsFit$\ge15$, nHitsFit/nHitsMax$>0.52$, gDCA$<3$\,cm, $|\eta|<1$ --- Sec.~\ref{sec:trkcuts}.
+\item TOF match: \fcmd{btofMatchFlag}$>0$ and $\beta>0$; primary momentum used for \mtwo --- Sec.~\ref{sec:tofdef}.
+\item Approximate TOF $n\sigma$ with a fixed $1/\beta$ resolution of 0.013 (QA only) --- Sec.~\ref{sec:tofdef}.
+\item BTOF module geometry fitted from production matches (no \fcmd{StBTofGeometry}) --- Sec.~\ref{sec:me}.
+\item Projection with the picoDst global helix; matching at cell level, ``cell'' and ``cell$\pm$1'' --- Sec.~\ref{sec:me}.
+\item Mixing within the same run, 14 $V_z$ $\times$ 9 refMult classes, 5 partner events --- Sec.~\ref{sec:me}.
+\item Large sample: one job per run ($\ge$60k events), bad runs excluded, catalog replicas deduplicated --- Sec.~\ref{sec:me1m}.
+\item Centrality from StRefMultCorr (2019 19.6\,GeV), pile-up events excluded from $m^2$ --- Sec.~\ref{sec:m2}.
+\item Random $m^2$ from overlay mixed events (partner hits added to the track's own event), normalized per projected
+  track, all hits included (untimed hits assumed to have the timed-hit time distribution) --- Sec.~\ref{sec:m2}.
+\end{enumerate}

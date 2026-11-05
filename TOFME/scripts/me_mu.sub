@@ -1,0 +1,12 @@
+# MuDst mixed event, one run per job. condor_submit scripts/me_mu.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/run_mu.sh $(run)
+output           = logs/mudst/condor_me_$(run).out
+error            = logs/mudst/condor_me_$(run).err
+log              = logs/mudst/condor_me.log
+accounting_group = group_star.cas
+request_memory   = 4000
+getenv           = false
+queue run from filelists/mudst/me_runs.txt

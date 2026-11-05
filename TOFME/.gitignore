@@ -1,0 +1,15 @@
+# code-only repository: results, outputs and logs stay local
+analysis_note/data/
+analysis_note/build/
+analysis_note/archive_*/
+analysis_note/figures/
+analysis_note/tables/
+analysis_note/logs/
+session_log_*.md
+plots/
+hermes_tmp/
+*.root
+*.so
+*.bak*
+.DS_Store
+.consign

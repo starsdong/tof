@@ -1,0 +1,14 @@
+# HTCondor submission for the TOFME mixed-event run (one picoDst file per job).
+# submit from /gpfs01/star/pwg/dongx/tof/TOFME:  condor_submit scripts/me_1M.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/run_me.sh -1 filelists/me_1M/job_$(jobid).list output/me_1M/me_$(jobid).root logs/me_1M/me_$(jobid).log $(geom) 5
+output           = logs/me_1M/condor_$(jobid).out
+error            = logs/me_1M/condor_$(jobid).err
+log              = logs/me_1M/condor.log
+accounting_group = group_star.cas
+request_memory   = 2000
+getenv           = false
+geom             = geom/btof_geom_test.txt
+queue jobid from filelists/me_1M_jobids.txt

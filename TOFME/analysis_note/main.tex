@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{url}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
+\sloppy
+\emergencystretch=3em
+
+% ---- helpers
+\newcommand{\fpath}[1]{\nolinkurl{#1}}
+\newcommand{\fcmd}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\GeVc}{GeV/$c$}
+\newcommand{\mtwo}{$m^2$}
+\newtcolorbox{choicebox}{colback=blue!5,colframe=blue!60!black,fonttitle=\bfseries,title=Choice,left=4pt,right=4pt,top=2pt,bottom=2pt}
+\newtcolorbox{caveatbox}{colback=red!5,colframe=red!70!black,fonttitle=\bfseries,title=Caveat,left=4pt,right=4pt,top=2pt,bottom=2pt}
+\newtcolorbox{decisionbox}{colback=orange!8,colframe=orange!80!black,fonttitle=\bfseries,title=Decision needed,left=4pt,right=4pt,top=2pt,bottom=2pt}
+\newcommand{\choice}[1]{\begin{choicebox}#1\end{choicebox}}
+\newcommand{\caveat}[1]{\begin{caveatbox}#1\end{caveatbox}}
+\newcommand{\decision}[1]{\begin{decisionbox}#1\end{decisionbox}}
+% one figure: \onefig{width}{file}{caption}{label}
+\newcommand{\figpanel}[3]{\begin{subfigure}[t]{#1\textwidth}\centering\includegraphics[width=\linewidth]{figures/#2}\caption{#3}\label{fig:#2}\end{subfigure}}
+
+% ---- generated numbers (scripts/make_numbers.C, scripts/parse_log.py)
+\input{tables/numbers.tex}
+\input{tables/runinfo.tex}
+\input{tables/me_numbers_test.tex}
+\input{tables/me_numbers_v3.tex}
+\input{tables/me_runs_v3.tex}
+\input{tables/m2_v3.tex}
+\input{tables/m2_v7.tex}
+\input{tables/m2_v8.tex}
+\input{tables/cell_v5.tex}
+\input{tables/nb_v6.tex}
+\input{tables/late_v8.tex}
+\input{tables/geominfo.tex}
+\input{tables/m2_v9.tex}
+\input{tables/mu.tex}
+\input{tables/ov.tex}
+\input{tables/probe.tex}
+
+\title{TOFME: picoDst QA and mixed-event setup for TPC--BTOF matching\\
+\large Run19 Au+Au $\sqrt{s_{NN}}=19.6$ GeV, production P24iy (test sample)}
+\author{X.~Dong (LBNL) \\ \small analysis note, draft v0.6}
+\date{\today}
+
+\begin{document}
+\maketitle
+\input{sections/00_abstract}
+\tableofcontents
+\input{sections/01_overview}
+\input{sections/02_dataset}
+\input{sections/03_method}
+\input{sections/04_event_qa}
+\input{sections/05_track_qa}
+\input{sections/06_tof_qa}
+\input{sections/06b_mixed_event}
+\input{sections/06c_mixed_event_large}
+\input{sections/06d_m2_mixed_event}
+\input{sections/06e_background_origin}
+\input{sections/06f_mudst}
+\input{sections/07_cuts}
+\input{sections/08_audit}
+\input{sections/09_open_issues}
+\input{sections/10_glossary}
+\input{sections/11_appendix_m2}
+\end{document}

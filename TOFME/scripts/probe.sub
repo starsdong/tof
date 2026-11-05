@@ -1,0 +1,12 @@
+# MuDst BTOF probe, one restored file per job. condor_submit scripts/probe.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/probe_job.sh $(tag)
+output           = logs/mudst/condor_$(tag).out
+error            = logs/mudst/condor_$(tag).err
+log              = logs/mudst/condor.log
+accounting_group = group_star.cas
+request_memory   = 3000
+getenv           = false
+queue tag from filelists/mudst/tags.txt

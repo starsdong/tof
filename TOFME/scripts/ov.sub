@@ -1,0 +1,12 @@
+# overlay ME with production BTOF matching/calibration re-run, one MuDst file per job. condor_submit scripts/ov.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/ov_job.sh $(tag)
+output           = logs/mudst/condor_ov_$(tag).out
+error            = logs/mudst/condor_ov_$(tag).err
+log              = logs/mudst/condor_ov.log
+accounting_group = group_star.cas
+request_memory   = 4000
+getenv           = false
+queue tag from filelists/mudst/tags_ov.txt

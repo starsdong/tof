@@ -1,0 +1,132 @@
+\section{TPC--BTOF association QA}
+\label{sec:tofqa}
+
+\paragraph{Match flag and $\beta$.} Every QA track with a \fcmd{BTofPidTraits} entry has
+\fcmd{btofMatchFlag}$>0$ (\nFlagZero{} entries with flag 0), so the picoDst keeps only matched tracks.
+\nFlagOne{} (\fracFlagOne\%) are one-to-one matches and \nFlagTwo{} (\fracFlagTwo\%) have flag 2,
+i.e.\ the hit had more than one track candidate (Fig.~\ref{fig:tof_matchflag}).
+\nBetaLost{} matched tracks (\fracBetaLost\%) have $\beta=0$ (no valid time) and are dropped from the
+TOF-matched sample. The $\beta$ distribution (Fig.~\ref{fig:tof_beta}) peaks just below 1 with a tail
+above 1 containing \fracBetaGtOne\% of the matched tracks; these give $m^2<0$.
+
+\paragraph{Local coordinates.} $z_{\rm local}$ is flat with sharp edges at $\pm3.05$\,cm, the matching window
+of \fcmd{StBTofMatchMaker} (Fig.~\ref{fig:tof_zlocal}). $y_{\rm local}$ (Fig.~\ref{fig:tof_ylocal}) has a plateau
+over the pad, $|y_{\rm local}|\lesssim1.6$\,cm, falling over about 1\,cm on each side, and flat tails out to
+$\pm5$\,cm about a factor 50 below the plateau (read by eye from the figure); \fracYLocalIn\% of the entries are within
+$|y_{\rm local}|<1.8$\,cm, RMS \rmsYLocal\,cm. The tails broaden at low momentum, where multiple
+scattering and the projection uncertainty are largest (Fig.~\ref{fig:tof_ylocal_p}).
+\caveat{The flat $y_{\rm local}$ tails are the region where random matches are expected to dominate.
+Their size relative to the plateau is a direct handle for the mixed-event normalisation.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.32}{tof_matchflag}{\fcmd{btofMatchFlag} of QA tracks with BTofPidTraits.}
+\hfill
+\figpanel{0.32}{tof_beta}{$\beta$ of matched tracks, log scale; red dashed line: $\beta=1$. The
+$\beta=0$ entries are in the first bin.}
+\hfill
+\figpanel{0.32}{tof_ylz}{$y_{\rm local}$ vs $z_{\rm local}$, log colour scale.}
+\\[1ex]
+\figpanel{0.32}{tof_ylocal}{$y_{\rm local}$ of matched tracks, 0.05\,cm bins, log scale.}
+\hfill
+\figpanel{0.32}{tof_zlocal}{$z_{\rm local}$ of matched tracks, 0.05\,cm bins, log scale.}
+\hfill
+\figpanel{0.32}{tof_ylocal_p}{$y_{\rm local}$ vs $p$, log colour scale.}
+\\[1ex]
+\figpanel{0.32}{tof_zlocal_p}{$z_{\rm local}$ vs $p$, log colour scale.}
+\caption{Match flag, $\beta$ and local hit coordinates for QA tracks matched to BTOF (flag$>0$).}
+\end{figure}
+
+\paragraph{Particle identification.} $1/\beta$ vs $p$ (Fig.~\ref{fig:tof_invbeta}) shows clean $\pi$, K and p bands
+that follow the expected curves, plus a deuteron band and a uniform background between bands.
+Fitting Gaussians to the \mtwo{} projection for $0.4<p<1.0$\,\GeVc{} (Fig.~\ref{fig:tof_m2_proj}) gives
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & mean (GeV$^2/c^4$) & $\sigma$ (GeV$^2/c^4$) & PDG $m^2$ \\
+\midrule
+$\pi$ & \mTwoMeanPi & \mTwoSigmaPi & \mTwoPdgPi \\
+K & \mTwoMeanK & \mTwoSigmaK & \mTwoPdgK \\
+p & \mTwoMeanP & \mTwoSigmaP & \mTwoPdgP \\
+d & \mTwoMeanD & \mTwoSigmaD & \mTwoPdgD \\
+\bottomrule
+\end{tabular}
+\end{center}
+The $\pi$, K and p positions agree with PDG values within 0.005\,GeV$^2/c^4$, i.e.\ the TOF
+calibration in P24iy is in good shape for this run. The deuteron fit has low statistics in this
+momentum window and a broad, asymmetric peak; it is shown for orientation only.
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{tof_invbeta}{$1/\beta$ vs $p$; red dashed curves are the expectations for $\pi$, K, p.}
+\hfill
+\figpanel{0.48}{tof_invbeta_pq}{$1/\beta$ vs $p\times q$.}
+\\[1ex]
+\figpanel{0.48}{tof_m2_p}{\mtwo{} vs $p$.}
+\hfill
+\figpanel{0.48}{tof_m2_pq}{\mtwo{} vs $p\times q$; d appears only for positive charge.}
+\\[1ex]
+\figpanel{0.48}{tof_m2_proj}{\mtwo{} for $0.4<p<1.0$\,\GeVc{} (black points), with Gaussian fits around the
+$\pi$, K, p and d peaks (red). Log scale; 0.01\,GeV$^2/c^4$ bins.}
+\hfill
+\figpanel{0.48}{tof_dinvbeta_pi}{$1/\beta-1/\beta_{\rm exp}^{\pi}$ vs $p$.}
+\caption{TOF PID for the TOF-matched sample (flag$>0$, $\beta>0$), log colour scale.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{tof_nsig_pi}{$n\sigma^{\rm TOF}_\pi$ vs $p$.}
+\hfill
+\figpanel{0.48}{tof_nsig_k}{$n\sigma^{\rm TOF}_{\rm K}$ vs $p$.}
+\\[1ex]
+\figpanel{0.48}{tof_nsig_p}{$n\sigma^{\rm TOF}_{\rm p}$ vs $p$.}
+\caption{Approximate TOF $n\sigma$ with a fixed $1/\beta$ resolution of 0.013 (Sec.~\ref{sec:tofdef}); not calibrated.}
+\end{figure}
+
+\paragraph{Occupancy.} Figure~\ref{fig:tof_occ_hits} shows the tray--module occupancy of all stored hits.
+The median module has \medianModHits{} hits in this sample. Trays \deadTrayList{} are empty;
+trays with empty modules, given as tray(number of empty modules), are \partTrayList.
+In total \nDeadModule{} of 3840 modules (\fracDeadModule\%) are empty, and no matched track points to an
+empty module (\nMatchedInEmpty{} entries), as expected. In each of the four trays with 8 empty modules, the empty modules are \eightModPattern{} (same list in all four). Isolated low-occupancy modules are also visible.
+The global hit-position map of matched tracks (Fig.~\ref{fig:tof_hitpos}) shows the same gaps as
+horizontal white bands at fixed $\phi$, separately for $z<0$ (east) and $z>0$ (west).
+Cell occupancy (1--6) is uniform within a factor \cellMaxOverMin{} (max/min).
+
+\caveat{The dead-tray/module list is from one run only. A run-by-run (or time-period) BTOF status map is
+needed for the mixed-event step, since mixing events with different dead areas biases the
+random-match rate.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.48}{tof_occ_hits}{Tray vs module for all stored BTOF hits (linear colour scale).}
+\hfill
+\figpanel{0.48}{tof_occ_matched}{Tray vs module of the cell matched to a QA track (flag$>0$), linear colour scale.}
+\\[1ex]
+\figpanel{0.48}{tof_hitpos}{Global $\phi$ vs $z$ of the BTOF hit position of matched tracks, log colour scale.}
+\caption{BTOF occupancy.}
+\end{figure}
+
+\paragraph{Matching efficiency.} Table~\ref{tab:eff} and Fig.~\ref{fig:tof_eff_pt} give
+$\varepsilon_{\rm match}$ versus $p_T$. It rises from \effLow{} at $0.15<p_T<0.3$\,\GeVc{} to a plateau of
+0.63--0.66 above 0.5\,\GeVc{} (Table~\ref{tab:eff}). Versus $\eta$ (Fig.~\ref{fig:tof_eff_eta}) it is \effEtaCentral{} for $|\eta|<0.5$
+with a shallow dip at $\eta\approx0$ and maxima near $|\eta|\approx0.5$, then drops to \effEtaOuter{} averaged
+over $0.5<|\eta|<1$ as the edge of the BTOF acceptance is reached. Versus $\phi$ (6$^\circ$ bins) it ranges
+from \effPhiMin{} (at $\phi\approx\effPhiMinAt$) to \effPhiMax.
+
+\begin{table}[h]
+\centering
+\caption{TOF matching efficiency vs $p_T$ for QA tracks (generated table \fpath{tables/eff.tex}). Statistical errors.}
+\label{tab:eff}
+\input{tables/eff.tex}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.32}{tof_eff_pt}{$\varepsilon_{\rm match}$ vs $p_T$ (0.05\,\GeVc{} bins).}
+\hfill
+\figpanel{0.32}{tof_eff_eta}{$\varepsilon_{\rm match}$ vs $\eta$.}
+\hfill
+\figpanel{0.32}{tof_eff_phi}{$\varepsilon_{\rm match}$ vs $\phi$ (1$^\circ$ bins).}
+\caption{TOF matching efficiency $N_{\rm TOF}/N_{\rm TPC}$ (flag$>0$, $\beta>0$ over QA tracks). Error bars:
+68\% Bayesian binomial intervals.}
+\end{figure}

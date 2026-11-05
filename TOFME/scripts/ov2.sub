@@ -1,0 +1,12 @@
+# v2 overlay/pool ME, one job per (MuDst file, mode). condor_submit scripts/ov2.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/ov_job.sh $(tag) $(mode)
+output           = logs/mudst/condor_ov$(mode)_$(tag).out
+error            = logs/mudst/condor_ov$(mode)_$(tag).err
+log              = logs/mudst/condor_ov2.log
+accounting_group = group_star.cas
+request_memory   = 6000
+getenv           = false
+queue tag, mode from filelists/mudst/tags_ov2.txt
