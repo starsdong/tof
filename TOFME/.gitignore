@@ -1,8 +1,7 @@
-# code-only repository: results, outputs and logs stay local
+# code, figures and the note PDF are tracked; data, logs and build outputs stay local
 analysis_note/data/
 analysis_note/build/
 analysis_note/archive_*/
-analysis_note/figures/
 analysis_note/tables/
 analysis_note/logs/
 session_log_*.md
