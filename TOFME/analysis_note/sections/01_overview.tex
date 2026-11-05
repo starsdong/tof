@@ -42,9 +42,16 @@ a QA baseline for the quantities the mixed-event study will use.
 \item MuDst (Sec.~\ref{sec:mudst}, \ovEvMtwo{} events of two runs): unmatched BTOF hits are \prUnmatchedFrac\% of all hits
   and much later than matched ones (\prUlate\% vs \prMlate\% above 26\,ns): slow, unreconstructed particles. Re-running
   \fcmd{StBTofMatchMaker}/\fcmd{StBTofCalibMaker} on MuDst reproduces all \clNSame{} production matches of the closure test
-  (time of flight to \clDtofMed\,ps median). Emulation with partner-track claims: random matches \muFrProdCi\% (0--5\%),
-  \muFrProdAll\% (0--80\%), SE/ME between p and d \muHiProdCi. Production makers re-run on overlaid hits (partner tracks
-  absent, upper bound): \ovFrCi\% and \ovFrAll\%, SE/ME \ovHiCi.
+  (time of flight to \clDtofMed\,ps median). Main result, production makers re-run on the overlay of partner hits and
+  partner tracks: random matches \ovtFrCi\% (0--5\%) and \ovtFrAll\% (0--80\%), SE/ME between p and d \ovtHiCi{}
+  (\ovtHiMinCi--\ovtHiMaxCi{} per bin at 0.4--2\,GeV/$c$). Cross-checks: emulation \muFrProdCi\% and \muFrProdAll\%;
+  without partner tracks \ovFrCi\%; the pool method (own hits removed) \poolFrCi\%, which is not a random-match fraction.
+\item Large MuDst sample (Sec.~\ref{sec:big}, 102 files of 14 runs, \mubigEvMtwo{} events, method 1): random matches
+  \mubigFrProdCi\% (0--5\%) and \mubigFrProdAll\% (0--80\%), SE/ME between p and d \mubigHiProdCi. In SE$-$ME the split Student-t
+  line shape is best in \bigFitTtwoBestCi{} of \bigFitNbinsCi{} momentum bins (mean $\chi^2$/ndf \bigFitChiTtwoCi{} vs \bigFitChiGCi{}
+  for Gaussians, 0--5\%); raw $\bar{\rm p}$/p = \bigRatPMin--\bigRatPMax{} at 0.4--2.5\,GeV/$c$. Method 2 (Sec.~\ref{sec:bigm2}) gives \ovbigFrCi\% and \ovbigFrAll\%, within \bigTwoOneFrDev\% of method 1, and
+  yields within \bigTwoYieldAgree\% at 0.4--2\,GeV/$c$. The SE excess between p and d at low momentum is a fixed rate per track, independent of
+  centrality and flat in time, so it is not a random match (Sec.~\ref{sec:lowp}).
 \item Occupancy: trays \deadTrayList{} have no hits at all; \nDeadModule{} of 3840 modules
   (\fracDeadModule\%) are empty. No matched track points to an empty module.
 \end{itemize}

@@ -1,0 +1,12 @@
+# large sample: overlay + partner tracks (mode 1), one job per file. condor_submit scripts/ovbig.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/ov_job.sh $(tag) $(mode)
+output           = logs/mudst/condor_ov$(mode)_$(tag).out
+error            = logs/mudst/condor_ov$(mode)_$(tag).err
+log              = logs/mudst/condor_ovbig.log
+accounting_group = group_star.cas
+request_memory   = 6000
+getenv           = false
+queue tag, mode from filelists/mudst/tags_big_ov.txt

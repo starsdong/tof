@@ -175,6 +175,10 @@ Int_t StTofMEMuMaker::Init()
   hM2MEprod = new TH3F("hM2MEprod", Form("ME overlay, full production emulation, partner hit chosen%s", ax), 9, -0.5, 8.5, kNPm, 0, kPMaxM, kNM2m, kM2LoM, kM2HiM);
   hMEprodSt = new TH3F("hMEprodSt", "full emulation overlay: 0 this-event hit, 1 partner hit, 2 none;cent9;p;status", 9, -0.5, 8.5, kNPm, 0, kPMaxM, 3, -0.5, 2.5);
   hChoiceP = new TH2D("hChoiceP", "full emulation: 0 same hit as prod, 1 other cell, 2 we none, 3 prod none;p (GeV/c);code", kNPm, 0, kPMaxM, 4, -0.5, 3.5);
+  hQM2SE = new TH3F("hQM2SE", "SE production #beta;cent9;p (GeV/c);q #times m^{2} (GeV^{2}/c^{4})", 9, -0.5, 8.5, kNPm, 0, kPMaxM, 1000, -5, 5);
+  hQM2MEprodB = new TH3F("hQM2MEprodB", "ME emulation incl. partner track claims;cent9;p (GeV/c);q #times m^{2} (GeV^{2}/c^{4})", 9, -0.5, 8.5, kNPm, 0, kPMaxM, 1000, -5, 5);
+  hM2SEneg = new TH3F("hM2SEneg", Form("SE production #beta, negative tracks%s", ax), 9, -0.5, 8.5, kNPm, 0, kPMaxM, kNM2m, kM2LoM, kM2HiM);
+  hM2MEprodBneg = new TH3F("hM2MEprodBneg", Form("ME emulation incl. partner track claims, negative tracks%s", ax), 9, -0.5, 8.5, kNPm, 0, kPMaxM, kNM2m, kM2LoM, kM2HiM);
   hM2MEprodB = new TH3F("hM2MEprodB", Form("ME overlay, production emulation incl. partner track claims%s", ax), 9, -0.5, 8.5, kNPm, 0, kPMaxM, kNM2m, kM2LoM, kM2HiM);
   hMEprodBSt = new TH3F("hMEprodBSt", "incl. partner track claims: 0 this-event hit, 1 partner hit, 2 none;cent9;p;status", 9, -0.5, 8.5, kNPm, 0, kPMaxM, 3, -0.5, 2.5);
   hNGlobProj = new TH1D("hNGlobProj", ";projected production-valid global tracks;events", 300, 0, 1500);
@@ -345,6 +349,8 @@ Int_t StTofMEMuMaker::Make()
       if (prodOk) {
         const Double_t b = ptr.beta();
         hM2SE->Fill(cent9, p, p * p * (1. / (b * b) - 1.));
+        hQM2SE->Fill(cent9, p, t->charge() * p * p * (1. / (b * b) - 1.));
+        if (t->charge() < 0) hM2SEneg->Fill(cent9, p, p * p * (1. / (b * b) - 1.));
         hDtSEprod->Fill(p, ptr.timeOfFlight() - tPi);
       }
       // SE: emulated production choice on this event's hits
@@ -380,7 +386,7 @@ Int_t StTofMEMuMaker::Make()
           if (o == 1) hM2MEprod->Fill(cent9, p, m2of(p, L, meHit[k][ip].t));
           const Int_t oB = meCellB[k][ip] >= 0 ? meHitB[k][ip].owner : -1;
           hMEprodBSt->Fill(cent9, p, oB < 0 ? 2 : oB);
-          if (oB == 1) hM2MEprodB->Fill(cent9, p, m2of(p, L, meHitB[k][ip].t));
+          if (oB == 1) { const Double_t mm = m2of(p, L, meHitB[k][ip].t); hM2MEprodB->Fill(cent9, p, mm); hQM2MEprodB->Fill(cent9, p, t->charge() * mm); if (t->charge() < 0) hM2MEprodBneg->Fill(cent9, p, mm); }
         }
         Int_t cB = -1; Float_t totB = 0, tEB = 1e9f;
         for (Int_t q = 0; q < nCand; q++) {

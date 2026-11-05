@@ -55,11 +55,13 @@ class StTofMEMuMaker : public StTofMEMaker {
   // ---- v3: the partner's own track projections also claim the partner's hits (a partner hit made by a
   // reconstructed particle is claimed by its own track as in the real event)
   TH3F *hM2MEprodB, *hMEprodBSt;
+  TH3F *hQM2SE, *hQM2MEprodB;   // charge-signed q*m2
+  TH3F *hM2SEneg, *hM2MEprodBneg; // m2 of negative tracks only
   TH3F *hMEtotSt;                  // (cent9, p, 0 this event wins / 1 partner wins / 2 no hit)
   TH2D *hChoice;                   // (p, code) 0 same hit as production, 1 other cell, 2 we pick none, 3 prod none
   TH2D *hDtSEprod, *hDtMEtot;      // (p, t - t_pi)
   TH1D *hCent9;
 
-  ClassDef(StTofMEMuMaker, 3)
+  ClassDef(StTofMEMuMaker, 4)
 };
 #endif

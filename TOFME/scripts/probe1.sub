@@ -1,0 +1,12 @@
+# probe pass 1 on the large sample (4000 events per file). condor_submit scripts/probe1.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/probe1_job.sh $(tag) 4000
+output           = logs/mudst/condor_probe1_$(tag).out
+error            = logs/mudst/condor_probe1_$(tag).err
+log              = logs/mudst/condor_probe1.log
+accounting_group = group_star.cas
+request_memory   = 3000
+getenv           = false
+queue tag from filelists/mudst/tags_big.txt

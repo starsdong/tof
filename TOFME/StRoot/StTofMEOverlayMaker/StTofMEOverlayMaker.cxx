@@ -89,6 +89,10 @@ Int_t StTofMEOverlayMaker::Init()
   const char* ax = ";cent9;p (GeV/c);m^{2} (GeV^{2}/c^{4})";
   hM2SE = new TH3F("hM2SE", Form("SE (re-run production)%s", ax), 9, -0.5, 8.5, kNP, 0, kPMax, kNM2, kM2Lo, kM2Hi);
   hM2ME = new TH3F("hM2ME", Form("ME: matched to a partner hit%s", ax), 9, -0.5, 8.5, kNP, 0, kPMax, kNM2, kM2Lo, kM2Hi);
+  hQM2SE = new TH3F("hQM2SE", "SE;cent9;p (GeV/c);q #times m^{2} (GeV^{2}/c^{4})", 9, -0.5, 8.5, kNP, 0, kPMax, 1000, -5, 5);
+  hQM2ME = new TH3F("hQM2ME", "ME: matched to a partner hit;cent9;p (GeV/c);q #times m^{2} (GeV^{2}/c^{4})", 9, -0.5, 8.5, kNP, 0, kPMax, 1000, -5, 5);
+  hM2SEneg = new TH3F("hM2SEneg", Form("SE, negative tracks%s", ax), 9, -0.5, 8.5, kNP, 0, kPMax, kNM2, kM2Lo, kM2Hi);
+  hM2MEneg = new TH3F("hM2MEneg", Form("ME, negative tracks%s", ax), 9, -0.5, 8.5, kNP, 0, kPMax, kNM2, kM2Lo, kM2Hi);
   hM2MEmerged = new TH3F("hM2MEmerged", Form("ME: matched to a merged hit with partner leading edge%s", ax), 9, -0.5, 8.5, kNP, 0, kPMax, kNM2, kM2Lo, kM2Hi);
   hMESt = new TH3F("hMESt", "overlay: 0 own-event hit, 1 partner hit, 2 no match;cent9;p (GeV/c);status", 9, -0.5, 8.5, kNP, 0, kPMax, 3, -0.5, 2.5);
   hDtSE = new TH2D("hDtSE", "SE;p (GeV/c);t - t_{#pi} (ns)", 32, 0, 3.2, 600, -3, 27);
@@ -178,7 +182,7 @@ Int_t StTofMEOverlayMaker::Make()
       Double_t m2, dt;
       const Bool_t mSE = trackM2(t, pv, m2, dt);
       qaSE.push_back(mSE);
-      if (mSE) { hM2SE->Fill(cent9, p, m2); hDtSE->Fill(p, dt); }
+      if (mSE) { hM2SE->Fill(cent9, p, m2); hQM2SE->Fill(cent9, p, t->charge() * m2); if (t->charge() < 0) hM2SEneg->Fill(cent9, p, m2); hDtSE->Fill(p, dt); }
     }
     for (size_t k = 0; k < buf.size(); k++) {
       const Mix& B = buf[k];
@@ -229,7 +233,7 @@ Int_t StTofMEOverlayMaker::Make()
         for (size_t m = 0; m < merged.size() && !fromB; m++) if (merged[m] == hi) { fromB = kTRUE; fromMerge = kTRUE; }
         hMESt->Fill(cent9, p, fromB ? 1 : 0);
         if (qaSE[q]) hMEStSE->Fill(cent9, p, fromB ? 1 : 0);
-        if (fromB) { hM2ME->Fill(cent9, p, m2); hDtME->Fill(p, dt); if (fromMerge) hM2MEmerged->Fill(cent9, p, m2); }
+        if (fromB) { hM2ME->Fill(cent9, p, m2); hQM2ME->Fill(cent9, p, t->charge() * m2); if (t->charge() < 0) hM2MEneg->Fill(cent9, p, m2); hDtME->Fill(p, dt); if (fromMerge) hM2MEmerged->Fill(cent9, p, m2); }
       }
       // restore A's hit array
       for (Int_t i = garr->GetEntriesFast() - 1; i >= nG0; i--) garr->RemoveAt(i);

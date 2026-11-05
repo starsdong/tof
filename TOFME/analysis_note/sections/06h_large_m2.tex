@@ -1,0 +1,125 @@
+\subsection{Large MuDst sample: method 2 (overlay) and comparison}
+\label{sec:bigm2}
+
+Method 2 (\fpath{StTofMEOverlayMaker} v3, mode 1: partner hits and partner global tracks overlaid on this event, production
+\fpath{StBTofMatchMaker}/\fpath{StBTofCalibMaker} re-run; Sec.~\ref{sec:mudst}) was run on the same 102 files, one job per file
+(\fpath{scripts/ovbig.sub}). The outputs are merged into \fpath{data/ov_big.root} (\fpath{scripts/merge_ovbig.sh}):
+\ovbigEvAll{} events, \ovbigEvMtwo{} used for $m^2$, on average \ovbigNTrkAdd{} partner global tracks added per overlay. The analysis
+chain is the one of Sec.~\ref{sec:big}: \fpath{scripts/make_ov.C} (tag \fcmd{big}), \fpath{scripts/make_qm2.C},
+\fpath{scripts/make_fit.C} (method 0) and \fpath{scripts/make_big_m2_tables.py}. In the overlay, \ovbigSEkeep\% of the SE-matched
+tracks keep their own hit, \ovbigSEswap\% switch to a partner hit and \ovbigSElose\% lose the match (four-file values in
+Sec.~\ref{sec:mudst}).
+
+\subsubsection{Random matches: method 2 vs method 1}
+Method 2 gives \ovbigFrCi\% random matches in 0--5\% and \ovbigFrAll\% in 0--80\% ($0.2<p<3$\,GeV/$c$). The two methods agree within
+\bigTwoOneFrDev\% (relative) in every centrality group (Table~\ref{tab:bigm2cent}), although method 2 uses production
+calibration and production matching while method 1 emulates both. Between the p and d peaks SE/ME is \ovbigHiCi{} (0--5\%), with
+\bigTwoHiMidMin--\bigTwoHiMidMax{} per momentum bin at 0.6--2\,GeV/$c$ and \bigTwoHiLow{} at 0.2--0.4\,GeV/$c$
+(Table~\ref{tab:bigm2bins}). The largest bin-by-bin ME/SE at 0.4--1.5\,GeV/$c$ is \ovbigVmaxCi{} (0--5\%), against
+\mubigVmaxProdCi{} for method 1: method 2 has no timing artefact below the pion peak.
+
+\input{tables/big_m2_cent}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{ovbig_m2_cent}{$m^2$ of QA tracks, 0--5\%, nine momentum bins, 102 MuDst files (log scale). Black points: same event;
+red filled: mixed event, method 2 (overlay with partner tracks, production makers re-run), normalized per QA track.
+Random matches \ovbigFrCi\%; SE/ME between p and d \ovbigHiCi.}
+\caption{Large sample, method 2, SE vs ME, 0--5\% (\fpath{scripts/make_ov.C}).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.49}{ovbig_m2_mid}{30--40\%: random matches \ovbigFrMid\%, SE/ME between p and d \ovbigHiMid.}
+\figpanel{0.49}{ovbig_m2_per}{60--80\%: random matches \ovbigFrPer\%, SE/ME between p and d \ovbigHiPer.}
+\caption{Large sample, method 2, SE vs ME in mid-central and peripheral events; encodings as in Fig.~\ref{fig:ovbig_m2_cent}.}
+\end{figure}
+
+\input{tables/big_m2_bins}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{qm2_ovbig_cent}{$q\times m^2$ of QA tracks, 0--5\%, 102 MuDst files, 0.02\,GeV$^2$/$c^4$ bins (log scale). Black line:
+same event; red filled: mixed event (method 2); blue points: SE$-$ME.}
+\caption{Large sample, method 2, charge-signed $m^2$, 0--5\% (\fpath{scripts/make_qm2.C}).}
+\end{figure}
+
+\subsubsection{Signal extraction with method 2}
+The fits of Sec.~\ref{sec:bigfit} were repeated with the method-2 ME (Fig.~\ref{fig:fit_ovbig_cent}, Table~\ref{tab:bigm2fit}). The
+split Student-t (T2) is again best: in \bigTwoFitTtwoBestCi{} of 9 bins in 0--5\% and \bigTwoFitTtwoBestAll{} of 9 in 0--80\%. The
+exception in both is 0.2--0.4\,GeV/$c$, where the double Gaussian is marginally better and no model is acceptable. Mean
+$\chi^2$/ndf in 0--5\% is G2 \bigTwoFitChiGtwoCi, T \bigTwoFitChiTCi, T2 \bigTwoFitChiTtwoCi, lower than with method 1
+(T2 \bigFitChiTtwoCi). The fitted yields add up to SE$-$ME within \bigTwoSumYDev\%. The yields of the two methods agree within
+\bigTwoYieldAgree\% for $\pi$, K and p at 0.4--2\,GeV/$c$; at 0.2--0.4\,GeV/$c$ the method-2 proton yield is \bigTwoYieldLowP\% higher
+(0--5\%), because method 2 subtracts less background there.
+
+\choice{For the signal yields the choice between methods 1 and 2 matters only below 0.4\,GeV/$c$ and for K above 2\,GeV/$c$. Method 2
+is the baseline (production calibration and matching); method 1 is a cross-check.}
+
+Per charge (method 2, 0--5\%), the Student-t family is better in \bigTwoFitNegTfamCi{} (negative) and \bigTwoFitPosTfamCi{}
+(positive) of 9 bins. The raw ratios at 0.4--2.5\,GeV/$c$ are $\pi^-/\pi^+ = $ \bigTwoRatPiMin--\bigTwoRatPiMax,
+K$^-$/K$^+ = $ \bigTwoRatKMin--\bigTwoRatKMax{} and $\bar{\rm p}$/p $=$ \bigTwoRatPMin--\bigTwoRatPMax, the same as with method 1.
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{fit_ovbig_cent}{SE$-$ME $m^2$ (points), 0--5\%, all tracks, method 2 ME (log scale), with the signal part of the best
+Gaussian-family model (blue dashed) and the best Student-t-family model (red).}
+\caption{Large sample, method 2: SE$-$ME and line-shape fits, 0--5\% (\fpath{scripts/make_fit.C}).}
+\end{figure}
+
+\input{tables/big_m2_fit}
+
+\subsubsection{The SE excess at low momentum}
+\label{sec:lowp}
+Both methods leave SE/ME $\approx2$ between the p and d peaks at 0.2--0.4\,GeV/$c$ in central events, and more in peripheral events.
+\fpath{scripts/make_lowp.C} (log \fpath{logs/lowp_numbers.txt}) tests whether this excess behaves like random matches.
+
+\paragraph{Centrality dependence.} Fig.~\ref{fig:lowp_cent} shows SE, ME and SE$-$ME in $1.6<m^2<2.8$\,GeV$^2$/$c^4$ per $10^4$
+tracks (method 1: projected tracks; method 2: QA tracks) in the nine centrality classes. From 70--80\% to 0--5\% the ME per track rises
+by a factor \lowpTwoAMErat{} (method 2, 0.2--0.4\,GeV/$c$), as random matches should. SE$-$ME stays flat:
+\lowpTwoADmin--\lowpTwoADmax{} per $10^4$ tracks at 0.2--0.4\,GeV/$c$, \lowpTwoBDmin--\lowpTwoBDmax{} at 0.4--0.6 and
+\lowpTwoCDmin--\lowpTwoCDmax{} at 0.6--1\,GeV/$c$ (method 2). Method 1 gives \lowpOneADmin--\lowpOneADmax,
+\lowpOneBDmin--\lowpOneBDmax{} and \lowpOneCDmin--\lowpOneCDmax{} (per projected track). The excess is a fixed rate per track,
+independent of the hit density. It is therefore not under-subtracted random background, which would scale like the ME. It stands
+out at low momentum and in peripheral events only because the random background is small there.
+
+\paragraph{Charge.} Table~\ref{tab:lowpcharge} gives the ratio of SE$-$ME of negative to positive tracks in
+$1.6<m^2<2.8$\,GeV$^2$/$c^4$. Both methods agree. Two components are visible:
+\begin{itemize}
+\item at 0.3--0.6\,GeV/$c$ outside 60--80\% the ratio is \lowpChMidMin--\lowpChMidMax{} (method 2): most of the excess is
+  charge-symmetric;
+\item at 0.2--0.25\,GeV/$c$ the ratio drops to \lowpChLowMin--0.2: the excess is almost only positive. A natural candidate is slow
+  protons that lose energy in the material before the TOF, arrive late and are reconstructed at larger $m^2$ (the high-$m^2$ tail of the
+  proton peak that also requires the split Student-t). The ratio below 1 at 0.6--1\,GeV/$c$ is the same proton tail.
+\end{itemize}
+The charge-symmetric part excludes kaon decays in flight, $\Lambda$ decays and deuterons as its source.
+
+\paragraph{Time structure.} Fig.~\ref{fig:lowp_dt} shows $t-t_\pi$ of SE and ME (method 2, 0--80\%). Beyond the particle peaks the SE$-$ME
+forms a flat plateau up to the end of the window (27\,ns), at a level comparable to the ME. In 15--27\,ns the SE/ME is \lowpLateRatA{}
+at 0.2--0.3\,GeV/$c$ and \lowpLateRatD{} at 0.6--1\,GeV/$c$, with a similar SE$-$ME per ns in all momentum bins
+(\fpath{logs/lowp_numbers.txt}). There is no peak at a fixed delay. The $m^2$ window $1.6<m^2<2.8$ maps to delays of 15--35\,ns at
+0.3\,GeV/$c$ but to a few ns at 1\,GeV/$c$, where the proton peak dominates; so a delay-flat component appears in the $m^2$ window
+mainly at low momentum.
+
+\input{tables/lowp_charge}
+
+\caveat{Interpretation (not proven). The positive-only part at the lowest momenta is most likely the proton energy-loss tail. The
+charge-symmetric part is a late hit correlated with the track itself, in or next to its cell, broad in time. Candidates are
+secondaries from hadronic interactions of the particle in the TOF trays and the material behind them (slow nucleons, fragments,
+back-splash), or delayed signals in neighbouring channels. A fixed-delay crosstalk is disfavoured by the flat time distribution. No ME can
+model such a correlated component. If needed, it can be estimated as a per-track template, for instance from peripheral events where the
+ME is negligible. Not done; see Sec.~\ref{sec:open}.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.95}{lowp_cent}{SE (black), ME (red) and SE$-$ME (blue open) in $1.6<m^2<2.8$\,GeV$^2$/$c^4$ per $10^4$ tracks versus centrality,
+for 0.2--0.4, 0.4--0.6 and 0.6--1\,GeV/$c$. Top: method 1 (per projected track); bottom: method 2 (per QA track).}
+\caption{Large sample: centrality dependence of the SE excess between the p and d peaks (\fpath{scripts/make_lowp.C}).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{lowp_dt}{$t-t_\pi$ of TOF-matched QA tracks, 0--80\%, four momentum bins (log scale). Black line: same event; red filled: mixed
+event (method 2, normalized per momentum bin); blue points: SE$-$ME. Peaks: electrons just below 0, $\pi$ at 0, K and p at positive delays.}
+\caption{Large sample, method 2: time structure of the SE excess (\fpath{scripts/make_lowp.C}).}
+\end{figure}

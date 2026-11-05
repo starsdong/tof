@@ -17,9 +17,10 @@ hits without a stored time. Random matches are then \mtMENormFracCiVthree\% of t
 the yield under the PID peaks in 0--5\% at $0.8<p<1$\,\GeVc. They explain only a small part of the yield between the
 proton and deuteron peaks, because the picoDst has no time for BTOF hits not matched to a track.
 On MuDst (Sec.~\ref{sec:mudst}), where all hits have a time, the production BTOF matching and calibration re-run on MuDst
-reproduce production exactly. Two mixed events that use all hits then describe the same-event background between the
-p and d peaks (SE/ME = \muHiProdCi{} and \ovHiCi{} in 0--5\%). Random matches are \muFrProdCi\% (central) to \ovFrCi\%
-(upper bound) of the TOF matches in 0--5\% and \muFrProdAll--\ovFrAll\% in 0--80\% (four MuDst files of two runs).
+reproduce production exactly. They are then re-run on overlaid events (hits and tracks of a partner event added); this
+mixed event describes the same-event background between the p and d peaks (SE/ME = \ovtHiCi{} in 0--5\%, against
+\mtSbRatioAllVnine{} on picoDst). Random matches are \ovtFrCi\% of the TOF matches in 0--5\% and \ovtFrAll\% in 0--80\%, in
+agreement with an independent emulation (\muFrProdCi\% and \muFrProdAll\%; four MuDst files of two runs).
 \textbf{Limitations:} the QA sections (\ref{sec:evtqa}--\ref{sec:tofqa}) use a \emph{test sample} of \nProcEvents{} events from one
 picoDst file of a single run (20093036); the mixed-event results use 15 runs. No bad-tray list is applied.
 The time of random hits without a stored time is an assumption in the picoDst sections (Sec.~\ref{sec:m2}); the MuDst

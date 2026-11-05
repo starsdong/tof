@@ -6,9 +6,14 @@ Ordered by importance for the next step.
 \item Improve the low-$p_T$ projection (energy loss, or outer helix not available in picoDst).
 \item Translate $P_{\rm ME}$ into a random-match correction of the TOF-matched yield and \mtwo{} background
   (needs the time of the random hit, not stored in picoDst).
-\item [decision] MuDst random-match result: central value (emulation with partner-track claims) vs the production re-run on
-  overlaid hits, which lacks the partner tracks (Sec.~\ref{sec:mudst}). Next: add the partner tracks to the overlay.
-\item MuDst statistics: restore of 98 files of 14 runs requested (\fpath{filelists/mudst/restore_100.txt}); one job per file.
+\item Line shapes: no fit model is statistically acceptable below 2\,GeV/$c$ on the large sample (Sec.~\ref{sec:bigfit}); try finer
+  momentum bins or a resolution-scaled variable, and understand the continuum left at 0.2--0.4\,GeV/$c$.
+\item Track-correlated late hits (Sec.~\ref{sec:lowp}): a charge-symmetric SE excess of about \lowpTwoADmin--\lowpTwoADmax{} per
+  $10^4$ tracks in $1.6<m^2<2.8$\,GeV$^2$/$c^4$ at 0.2--0.4\,GeV/$c$, independent of centrality, plus a positive-only part at
+  0.2--0.3\,GeV/$c$. Identify the source (cell of the late hit relative to the projection, ToT, $|\eta|$ dependence) and decide whether
+  a per-track template correction is needed.
+\item Method 2 loses \ovbigSElose\% of the own matches in the overlay; quantify the effect on the random fraction.
+\item MuDst statistics: 98 files of 14 runs restored (\fpath{filelists/mudst/restore_100.txt}, 319\,GB); one job per file.
   Run 20088015 needs a workaround for the trigger-data decoding errors.
 \item Understand the slight $p_T$ dependence of $P_{\rm ME}$ seen in the 1M sample.
 \item Process the three removed files (030, 033, 040) if the full 57-file sample is needed.

@@ -1,0 +1,12 @@
+# large sample: method 1 emulation, one job per file. condor_submit scripts/mubig.sub
+universe         = vanilla
+executable       = /bin/bash
+initialdir       = /gpfs01/star/pwg/dongx/tof/TOFME
+arguments        = scripts/mu_file.sh $(tag)
+output           = logs/mudst/condor_mu_$(tag).out
+error            = logs/mudst/condor_mu_$(tag).err
+log              = logs/mudst/condor_mubig.log
+accounting_group = group_star.cas
+request_memory   = 4000
+getenv           = false
+queue tag from filelists/mudst/tags_ov.txt

@@ -5,14 +5,14 @@ The picoDst stores a time only for BTOF hits that production matched to a track 
 Sec.~\ref{sec:bkg}). The unmatched hits therefore cannot compete in a picoDst mixed event, and the late same-event
 background could not be reproduced (best picoDst result: SE/ME = \mtSbRatioAllVnine{} between the p and d peaks).
 The MuDst keeps every \fcmd{StMuBTofHit} with its leading and trailing edge, so this section repeats the mixed event on
-MuDst. Two methods are used: an emulation of the production matching in our own maker (Sec.~\ref{sec:muemul}), and a re-run
-of the production makers themselves on the overlaid events (Sec.~\ref{sec:muov}).
+MuDst. Two methods are used: an emulation of the production matching in our own maker (Sec.~\ref{sec:muemul}), and, as the
+main result, a re-run of the production makers themselves on the overlaid events (Sec.~\ref{sec:muov}).
 
 \paragraph{Sample.} The P24iy MuDst are on HPSS only. Six MuDst files of three runs were restored through the Data
 Carousel (\fpath{scripts/mudst_restore.sh}, list \fpath{filelists/mudst/restore_test.txt}); they are the raw files of the
 picoDst sample. The two files of run 20088015 are not used: reading them floods the log with trigger-data decoding errors
 and the jobs stall. The four files used are \fpath{st_physics_20060065_raw_1000011}, \fpath{_5500010},
-\fpath{st_physics_20073019_raw_4500013} and \fpath{_7000013}: \ovEvAll{} events, of which \ovEvMtwo{} pass the
+\fpath{st_physics_20073019_raw_4500013} and \fpath{_7000013}: \ovtEvAll{} events, of which \ovtEvMtwo{} pass the
 event selection of Sec.~\ref{sec:m2} and have a VPD start time. The m$^2$ numbers in this section use these events only;
 they are a test sample of two runs. Statistical uncertainties only.
 
@@ -96,10 +96,10 @@ pion-like partner hits are smeared about three times wider in $m^2$ than in the 
 beside the pion and kaon peaks the mixed event exceeds the same event bin by bin, up to ME/SE = \muVmaxProdCi{} in 0--5\%
 ($0.4<p<1.5$\,GeV/$c$). This is the motivation for method 2.}
 
-\subsubsection{Method 2: production makers re-run on overlaid events}
+\subsubsection{Method 2 (main result): production makers re-run on overlaid events}
 \label{sec:muov}
-\fpath{StRoot/StTofMEOverlayMaker} (macro \fpath{macros/runTofMEOverlay.C}, one HTCondor job per file) runs after the
-chain of Sec.~\ref{sec:muclos}, which first re-runs the three production makers on the event itself; this gives the same
+\fpath{StRoot/StTofMEOverlayMaker} (macro \fpath{macros/runTofMEOverlay.C}, one HTCondor job per file and setup) runs after
+the chain of Sec.~\ref{sec:muclos}, which first re-runs the three production makers on the event itself; this gives the same
 event. Mixing classes are 14 $V_z$ bins $\times$ 9 refMult classes per run, with the last 5 events of a class as partners.
 For each partner:
 \begin{enumerate}
@@ -107,51 +107,89 @@ For each partner:
   by $t_{\rm start}^{\rm event}-t_{\rm start}^{\rm partner}$ (VPD start times from \fcmd{StBTofHeader}), so that each
   partner hit keeps its time of flight. A partner hit in a cell that already has an overlapping hit
   ($|\Delta t_{\rm LE}|$ below the ToT of the earlier hit) is merged into it: earlier leading edge, later trailing edge;
-\item \fcmd{StBTofMatchMaker}, \fcmd{StVpdCalibMaker} and \fcmd{StBTofCalibMaker} are run again on the overlaid event;
-\item a QA track matched to an appended hit, or to a merged hit whose leading edge came from the partner, is a random match.
-  Its $m^2$ is computed from the re-run time of flight and path length, exactly as for the same event;
-\item the hit array of the event is restored.
+\item the partner's global tracks with $n_{\rm HitsFit}\ge15$ and $0<{\rm flag}<1000$ (on average \ovtNTrkAdd{} per partner)
+  are appended to the global-track array. They have no primary-track link and are not counted; their role is to claim the
+  cells of the partner hits, so that a partner hit made by a reconstructed particle is discarded as shared, as in its own
+  event;
+\item \fcmd{StBTofMatchMaker}, \fcmd{StVpdCalibMaker} and \fcmd{StBTofCalibMaker} are run again on the overlaid event.
+  The match maker resets the BTOF information of every track and hit at the start of each pass;
+\item a QA track of the event matched to an appended hit, or to a merged hit whose leading edge came from the partner, is a
+  random match. Its $m^2$ is computed from the re-run time of flight and path length, exactly as for the same event;
+\item the appended hits and tracks are removed and the hit array of the event is restored.
 \end{enumerate}
-The mixed event is normalized per QA track in each (centrality, $p$) bin. In the overlays \ovAnyMatch\% of the QA tracks have
-a match, compared with \ovSEMatch\% in the same event; \ovOwnLost\% of the same-event matches are replaced by a partner hit
-or lost.
+The mixed event is normalized per QA track in each (centrality, $p$) bin. The same event and the mixed event therefore share
+the production matching rule (shared cells, largest ToT), the production calibration and the same path-length formula.
 
 \begin{figure}[H]
 \centering
-\figpanel{0.9}{ov_m2_cent}{$m^2$ of QA tracks, 0--5\%, nine momentum bins, four MuDst files (log scale). Black points:
-same event. Red filled: mixed event with the production makers re-run on the overlaid hits, normalized per QA track.
-Both use the re-run calibration. SE/ME between the p and d peaks is \ovHiCi{} (0.2--3\,GeV/$c$); the largest bin-by-bin
-ME/SE at $0.4<p<1.5$\,GeV/$c$ is \ovVmaxCi.}
-\caption{MuDst mixed event, production makers re-run on overlaid events, 0--5\% (\fpath{scripts/make_ov.C}).}
+\figpanel{0.9}{ovtrk_m2_cent}{$m^2$ of QA tracks, 0--5\%, nine momentum bins, four MuDst files (log scale). Black points:
+same event. Red filled: mixed event with the production makers re-run on the overlay of partner hits and partner tracks,
+normalized per QA track. Both use the re-run calibration. Random matches are \ovtFrCi\% of the TOF matches; SE/ME between
+the p and d peaks is \ovtHiCi{} (0.2--3\,GeV/$c$) and \ovtHiMinCi--\ovtHiMaxCi{} per bin at 0.4--2\,GeV/$c$.}
+\caption{MuDst mixed event (main result), production makers re-run on overlaid hits and tracks, 0--5\% (\fpath{scripts/make_ov.C}).}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\figpanel{0.9}{ov_m2_all}{As Fig.~\ref{fig:ov_m2_cent} for 0--80\% centrality.}
-\caption{MuDst mixed event, production makers re-run, 0--80\%.}
+\figpanel{0.9}{ovtrk_m2_all}{As Fig.~\ref{fig:ovtrk_m2_cent} for 0--80\% centrality. Random matches \ovtFrAll\%; SE/ME between
+the p and d peaks \ovtHiAll{} (0.2--3\,GeV/$c$) and \ovtHiMinAll--\ovtHiMaxAll{} per bin at 0.4--2\,GeV/$c$.}
+\caption{MuDst mixed event (main result), 0--80\%.}
 \end{figure}
 
-With the common calibration the spike of method 1 beside the pion peak disappears, and the mixed event follows the shape
-of the same-event background at all $m^2$, including the region between the p and d peaks and the valleys (read by eye).
-Its level, however, is too high: the random fraction is \ovFrCi\% (0--5\%) and \ovFrAll\% (0--80\%), equal to method 1
-without partner-track claims, and at 0.6--2\,GeV/$c$ the mixed event is above the same event between the p and d
-peaks (SE/ME below 1 in every bin, Table~\ref{tab:mudstcmp}).
+Random matches are \ovtFrCi\% of the TOF matches in 0--5\% and \ovtFrAll\% in 0--80\% ($0.2<p<3$\,GeV/$c$). This agrees with
+the emulation of Sec.~\ref{sec:muemul} (\muFrProdCi\% and \muFrProdAll\%). With the common calibration the spike of the
+emulation beside the pion peak is gone: the largest bin-by-bin ME/SE at $0.4<p<1.5$\,GeV/$c$ is \ovtVmaxCi{} in 0--5\%, and
+the mixed event follows the shape of the same-event background at all $m^2$, including the valleys and the region between
+the p and d peaks (read by eye, Fig.~\ref{fig:ovtrk_m2_cent}). The fractions under the PID peaks are listed per momentum bin in
+Table~\ref{tab:mudstcmp}.
 
-\caveat{In method 2 only the partner hits are added, not the partner tracks. A partner hit made by a reconstructed
-particle is therefore never discarded as shared, which it would be in a real event, where its own track also claims it.
-Method 2 overestimates the random matches by this amount. Adding the partner tracks to the overlay would also make them
-compete for the hits of the event (a denser event); this is not yet done.}
+\paragraph{Effect of the partner tracks on the event's own matches.} The added tracks also compete for the hits of the event,
+which the overlay makes denser than a real event. Of the QA tracks matched in the same event, \ovtSEkeep\% keep their own hit
+in the overlays, \ovtSEswap\% are matched to a partner hit instead and \ovtSElose\% lose their match, mostly because a
+partner track shares the cell. Without partner tracks the overlay matches \ovAnyMatch\% of the QA tracks (same event
+\ovSEMatch\%); with them \ovtAnyMatch\%.
+
+\caveat{Between the p and d peaks the mixed event is still \ovtHiMinCi--\ovtHiMaxCi{} times below the same event per momentum
+bin at 0.4--2\,GeV/$c$ (0--5\%), with \ovtNHiMin--\ovtNHiMax{} same-event entries per bin. Below 0.4\,GeV/$c$ and above 2\,GeV/$c$ the
+ratio is larger (Table~\ref{tab:mudstcmp}), and these bins are sparse. The overlay removes \ovtSElose\% of the event's own
+matches, which slightly reduces the competition and is a possible bias of the same order. Light-nucleus candidates and
+other real tracks in the window are not subtracted. The larger sample is needed to tell these apart.}
+
+\subsubsection{Cross-checks: overlay without partner tracks, and the pool method}
+\label{sec:mupool}
+The same maker was run in three other setups on the same events:
+\begin{itemize}
+\item \textbf{Overlay, partner hits only:} random matches \ovFrCi\% (0--5\%) and \ovFrAll\% (0--80\%), SE/ME between the p and
+  d peaks \ovHiCi. Without their tracks, partner hits of reconstructed particles are never discarded as shared, so the
+  random matches are overestimated by a factor \ovHitsOnlyFactor{} (0--5\%).
+\item \textbf{Pool} (the conventional mixed event: the event's own hits removed, its tracks matched to the partner hits only):
+  \poolFrCi\% and \poolFrAll\%, SE/ME \poolHiCi. Every track is treated as if its own hit were missing, so the result is
+  the random-hit probability for tracks without their own hit, not the random-match fraction. The overshoot reaches
+  ME/SE = \poolVmaxCi{} in single valley bins (0--5\%).
+\item \textbf{Pool with partner tracks:} \pooltFrCi\% and \pooltFrAll\%, SE/ME \pooltHiCi. The partner tracks remove
+  \poolTrkRemoved\% of the pool matches (0--5\%): the hits left free are mostly those of unreconstructed particles.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.49}{ovpool_m2_cent}{Pool: event hits removed, partner hits only.}
+\figpanel{0.49}{ovpooltrk_m2_cent}{Pool with partner tracks.}
+\caption{Pool setups, 0--5\%; encodings as in Fig.~\ref{fig:ovtrk_m2_cent} (\fpath{scripts/make_ov.C}).}
+\end{figure}
+
+\choice{The pool method cannot give the random-match fraction without the fraction of tracks that have no own hit, which is
+not measurable (the observed matches contain random ones), and it misses random hits that beat the track's own hit by ToT.
+The overlay keeps the own hit and lets the production algorithm decide both cases; it is used for the result.}
 
 \subsubsection{Comparison and current result}
 \input{tables/mudst_cmp}
 
-\decision{Current result (option chosen for this draft): method 1 with partner-track claims is the central value,
-\muFrProdCi\% of the TOF matches in 0--5\% and \muFrProdAll\% in 0--80\% ($0.2<p<3$\,GeV/$c$). Method 2 is an upper bound,
-\ovFrCi\% and \ovFrAll\%. The difference is a systematic uncertainty until the partner tracks are included in method 2.
-The fractions under the PID peaks per momentum bin are listed for both methods in Table~\ref{tab:mudstcmp}.}
+\decision{Current result: the overlay of partner hits and tracks with the production makers re-run (method 2). Random
+matches are \ovtFrCi\% of the TOF matches in 0--5\% and \ovtFrAll\% in 0--80\% ($0.2<p<3$\,GeV/$c$), with the emulation
+(\muFrProdCi\% and \muFrProdAll\%) as the cross-check. To be confirmed on the 98 restored MuDst files of 14 runs.}
 
-Both methods describe the same-event background between the p and d peaks far better than any picoDst mixed event: SE/ME
-there is \muHiProdCi{} (method 1) and \ovHiCi{} (method 2) in 0--5\%, against \mtSbRatioAllVnine{} on picoDst. The late
-background is therefore made of random matches to real, mostly unreconstructed slow particles. It is missing in the
-picoDst mixed event because these hits have no time there. Above 2\,GeV/$c$ and below 0.4\,GeV/$c$ the HI window has few
-same-event entries per bin ($N_{\rm HI}$ in Table~\ref{tab:mudstcmp}), so these bins need the larger sample (about 100 MuDst files, restore requested).
+The MuDst mixed event describes the same-event background between the p and d peaks far better than any picoDst mixed event:
+SE/ME there is \ovtHiCi{} in 0--5\%, against \mtSbRatioAllVnine{} on picoDst. The late background is therefore made of random
+matches to real, mostly unreconstructed slow particles, which have no time in the picoDst. Above 2\,GeV/$c$ and below
+0.4\,GeV/$c$ the region has few same-event entries per bin ($N_{\rm HI}$ in Table~\ref{tab:mudstcmp}); these bins need the
+larger sample (98 MuDst files restored).

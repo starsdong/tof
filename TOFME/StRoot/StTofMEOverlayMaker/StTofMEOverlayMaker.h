@@ -50,9 +50,11 @@ class StTofMEOverlayMaker : public StMaker {
   TH1D *hEvtFlow, *hDtStart, *hNAdd, *hNMerge, *hCent9, *hNPartner;
   TH2D *hNTrk, *hNTrial;
   TH3F *hM2SE, *hM2ME, *hMESt, *hM2MEmerged;
+  TH3F *hQM2SE, *hQM2ME;   // charge-signed q*m2
+  TH3F *hM2SEneg, *hM2MEneg; // m2 of negative tracks only
   TH2D *hDtSE, *hDtME;
   TH3F *hMEStSE;      // status in the overlay for QA tracks matched in the same event
   TH1D *hNAddTrk;
-  ClassDef(StTofMEOverlayMaker, 2)
+  ClassDef(StTofMEOverlayMaker, 3)
 };
 #endif

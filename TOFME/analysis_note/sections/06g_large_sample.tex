@@ -1,0 +1,147 @@
+\subsection{Large MuDst sample: method 1 (emulation)}
+\label{sec:big}
+
+\paragraph{Sample and production.} Restored from HPSS (\fpath{scripts/mudst_restore100.sh}, list
+\fpath{filelists/mudst/restore_100.txt}): 98 MuDst files, 7 per run for the 14 runs of the picoDst sample without 20088015.
+Together with the four files of Sec.~\ref{sec:mudst} the sample has 102 files (\fpath{filelists/mudst/tags_all.txt}) and
+\mubigEvAll{} events, of which \mubigEvMtwo{} pass the selection of Sec.~\ref{sec:m2} and are used for $m^2$. One HTCondor job
+per file:
+\begin{enumerate}
+\item calibration pass: \fpath{macros/probeMuBTof.C} pass 1 on the first 4000 events of each file
+  (\fpath{scripts/probe1.sub}); the outputs of a run are merged into the per-cell offsets \fpath{output/mudst/off_<run>.root}
+  (\fpath{scripts/off_big.sh});
+\item method 1, \fpath{StTofMEMuMaker} v4 (\fpath{scripts/mubig.sub}, \fpath{scripts/mu_file.sh}): production emulation with
+  partner-track claims, as in Sec.~\ref{sec:muemul}. Mixing buffers are per run and file;
+\item method 2, \fpath{StTofMEOverlayMaker} v3 with partner tracks (\fpath{scripts/ovbig.sub}); results in
+  Sec.~\ref{sec:bigm2}.
+\end{enumerate}
+Both makers (v4 and v3) additionally store the charge-signed $q\times m^2$ and the $m^2$ of negative tracks for SE and ME; the
+positive-track histograms are the difference. The 102 method-1 outputs are merged into \fpath{data/mu_big.root}. Scripts:
+\fpath{scripts/make_mu.C} (tag \fcmd{big}), \fpath{scripts/make_qm2.C}, \fpath{scripts/make_fit.C},
+\fpath{scripts/make_big_tables.py}; logs \fpath{logs/mubig_numbers.txt}, \fpath{logs/qm2_mubig.txt},
+\fpath{logs/fit_mubig*.txt}. Statistical uncertainties only.
+
+\caveat{All numbers of this section are from method 1, which uses our own hit times (RMS \mubigCalRMS\,ns against production;
+Sec.~\ref{sec:muemul}). Method 2 and the comparison follow in Sec.~\ref{sec:bigm2}.}
+
+\subsubsection{Random matches}
+The emulation picks the production hit for \mubigChoiceSame\% of the production matches, as in the four-file test. Random
+matches are \mubigFrProdCi\% of the TOF matches in 0--5\% and \mubigFrProdAll\% in 0--80\% ($0.2<p<3$\,GeV/$c$), consistent with the
+four-file values (\muFrProdCi\% and \muFrProdAll\%). Between the p and d peaks SE/ME is \mubigHiProdCi{} (0--5\%) and
+\mubigHiProdAll{} (0--80\%). Per momentum bin (Table~\ref{tab:bigbins}) it is \bigHiMidMin--\bigHiMidMax{} at 0.6--2\,GeV/$c$
+(0--5\%). The excess that remains is at $0.2<p<0.4$\,GeV/$c$
+(\bigHiLow) and above 2\,GeV/$c$ (\bigHiTopMin--\bigHiTopMax). The largest bin-by-bin ME/SE values are in nearly empty bins just
+below the pion peak; they are the timing artefact of method 1 (red box in Sec.~\ref{sec:muemul}).
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{mubig_m2_cent}{$m^2$ of QA tracks, 0--5\%, nine momentum bins, 102 MuDst files (log scale). Black points: same event
+(production $\beta$). Red filled: mixed event, method 1 with partner-track claims, normalized per QA track. Random matches \mubigFrProdCi\%; SE/ME between p and d \mubigHiProdCi.}
+\caption{Large sample, method 1, SE vs ME, 0--5\% (\fpath{scripts/make_mu.C}).}
+\end{figure}
+
+\input{tables/big_m1_bins}
+
+\paragraph{Other centralities.} Figures~\ref{fig:mubig_m2_mid} and \ref{fig:mubig_m2_per} show the same comparison for mid-central
+(30--40\%) and peripheral (60--80\%) events, and Table~\ref{tab:bigcent} gives the numbers per momentum bin. Random matches fall
+with centrality: \mubigFrProdCi\% (0--5\%), \bigFrMid\% (30--40\%) and \bigFrPer\% (60--80\%) of the TOF matches at $0.2<p<3$\,GeV/$c$.
+The mixed event describes the region between the p and d peaks best in central events; SE/ME there is \mubigHiProdCi{} (0--5\%),
+\bigHiMid{} (30--40\%) and \bigHiPer{} (60--80\%). In the lowest momentum bin it is \bigHiLow, \bigHiLowMid{} and \bigHiLowPer: the
+SE continuum above the ME at $0.2<p<0.4$\,GeV/$c$ is seen in all three centralities and is relatively largest in peripheral events,
+where the random background is smallest (read from the figures: in 60--80\% the SE continuum at 0.2--0.6\,GeV/$c$ lies several times
+above the ME, cf.\ the HI column of Table~\ref{tab:bigcent}). In 60--80\% above 1.2\,GeV/$c$ the ME between p and d is close to zero and the HI ratio is set by a
+few SE counts.
+
+\caveat{A source of SE entries above the ME that scales with the number of tracks rather than with the hit density (e.g.\ late hits
+correlated with the track itself) would give exactly this centrality pattern. It is studied in Sec.~\ref{sec:lowp}.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{mubig_m2_mid}{$m^2$ of QA tracks, 30--40\%, nine momentum bins, 102 MuDst files (log scale). Black points: same event;
+red filled: mixed event, method 1 with partner-track claims. Random matches \bigFrMid\%; SE/ME between p and d \bigHiMid.}
+\caption{Large sample, method 1, SE vs ME, 30--40\% (\fpath{scripts/make_mu.C}).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{mubig_m2_per}{$m^2$ of QA tracks, 60--80\%, nine momentum bins, 102 MuDst files (log scale). Encodings as in
+Fig.~\ref{fig:mubig_m2_mid}. Random matches \bigFrPer\%; SE/ME between p and d \bigHiPer.}
+\caption{Large sample, method 1, SE vs ME, 60--80\% (\fpath{scripts/make_mu.C}).}
+\end{figure}
+
+\input{tables/big_m1_cent}
+
+\subsubsection{Charge-separated $q\times m^2$}
+Fig.~\ref{fig:qm2_mubig_cent} shows SE, ME and SE$-$ME versus $q\times m^2$, which separates $\pi^\pm$, K$^\pm$ and p/$\bar{\rm p}$;
+the deuteron appears on the positive side only (read by eye). The random fraction is similar for both charges at low momentum and
+larger for negative tracks at high momentum ($f^-$, $f^+$ in Table~\ref{tab:bigbins}). The random hits do not depend on the
+track charge; the fraction is larger for negatives because there are fewer real heavy negative particles to normalize to.
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{qm2_mubig_cent}{$q\times m^2$ of QA tracks, 0--5\%, 102 MuDst files, 0.02\,GeV$^2$/$c^4$ bins (log scale). Black line:
+same event; red filled: mixed event (method 1); blue points: SE$-$ME.}
+\caption{Large sample, method 1, charge-signed $m^2$, 0--5\% (\fpath{scripts/make_qm2.C}).}
+\end{figure}
+
+\subsubsection{Signal extraction: SE$-$ME and line-shape fits}
+\label{sec:bigfit}
+In each centrality group and momentum bin, the SE histogram (0.01\,GeV$^2$/$c^4$ bins) is fitted in $-0.6<m^2<4.8$\,GeV$^2$/$c^4$
+with a Poisson likelihood. The model is signal + constant + the normalized ME, with the ME held fixed; this is the SE$-$ME
+subtraction with correct statistics. The function is integrated over each bin. The signal has four peaks ($\pi$, K, p, d), and
+four line shapes are compared, each with free yield, mean and width per species:
+\begin{itemize}
+\item G: Gaussian;
+\item G2: double Gaussian (common mean, core and wide width, core fraction);
+\item T: Student-t, $A/\sigma\,t_\nu((m^2-\mu)/\sigma)$, free $\nu$ per species;
+\item T2: split Student-t, separate widths below and above the mean, free $\nu$ per species.
+\end{itemize}
+The deuteron width is bounded so that it cannot absorb a continuum. The model with the smallest Pearson $\chi^2$/ndf of SE
+against the model is called best.
+
+\choice{The Student-t family describes the peaks better than the Gaussian family. The split Student-t (T2) is the best model in
+\bigFitTtwoBestCi{} of \bigFitNbinsCi{} momentum bins in 0--5\% and \bigFitTtwoBestAll{} of \bigFitNbinsAll{} in 0--80\% (all
+tracks). Mean $\chi^2$/ndf in 0--5\%: G \bigFitChiGCi, G2 \bigFitChiGtwoCi, T \bigFitChiTCi, T2 \bigFitChiTtwoCi. The asymmetric
+shape is needed for the high-$m^2$ tail of the proton peak. T2 is used for the yields.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{fit_mubig_cent}{SE$-$ME $m^2$ (points), 0--5\%, all tracks, 102 MuDst files, method 1 (log scale), with the signal part
+of the best Gaussian-family model (blue dashed) and the best Student-t-family model (red). The $\chi^2$/ndf of both are given
+in each panel.}
+\caption{Large sample, method 1: SE$-$ME and line-shape fits, 0--5\% (\fpath{scripts/make_fit.C}).}
+\end{figure}
+
+\input{tables/big_m1_fit}
+
+The fitted yields add up to SE$-$ME within \bigSumYDev\% in every bin. With T2, $\chi^2$/ndf is \bigTtwoChiTopMin--\bigTtwoChiTopMax{}
+above 2\,GeV/$c$, \bigTtwoChiHiMin--\bigTtwoChiHiMax{} at 1--2\,GeV/$c$, \bigTtwoChiMidMin--\bigTtwoChiMidMax{} at 0.4--1\,GeV/$c$ and
+\bigTtwoChiLowP{} at 0.2--0.4\,GeV/$c$ (0--5\%).
+
+\caveat{No model is statistically acceptable below 2\,GeV/$c$ with \mubigEvMtwo{} events. Two limitations are seen in the figures (read by
+eye): (i) at $0.2<p<0.4$\,GeV/$c$ a continuum of about 100 counts per bin remains between the peaks after the subtraction, the same
+SE excess as in Table~\ref{tab:bigbins}; it is under-subtracted background, not a line-shape problem; (ii) each momentum bin mixes
+tracks with different $m^2$ resolution (momentum, path length, centrality), so a single line shape per species cannot be exact at this
+precision. Finer momentum bins or a resolution-scaled variable ($1/\beta$ residuals) would address (ii).}
+
+\paragraph{Charge-separated fits.} The same fits were done separately for negative and positive tracks
+(Figs.~\ref{fig:fit_mubigneg_cent} and \ref{fig:fit_mubigpos_cent}). The Student-t family is better in \bigFitNegTfamCi{} (negative)
+and \bigFitPosTfamCi{} (positive) of 9 bins in 0--5\%. The sum of the negative and positive yields reproduces the all-track yield
+within \bigClosPiDev\% ($\pi$), \bigClosKDev\% (K) and \bigClosPDev\% (p) at 0.4--2.5\,GeV/$c$. In that range the ratios are
+$\pi^-/\pi^+ = $ \bigRatPiMin--\bigRatPiMax, K$^-$/K$^+ = $ \bigRatKMin--\bigRatKMax{} and $\bar{\rm p}$/p $=$ \bigRatPMin--\bigRatPMax{}
+(0--5\%, Table~\ref{tab:bigratio}); these are raw yield ratios without efficiency corrections. At 0.2--0.4\,GeV/$c$ the
+$\bar{\rm p}$/p ratio is distorted by the continuum, and at 2.5--3\,GeV/$c$ the $\pi$ and K peaks are no longer separated.
+
+\input{tables/big_m1_ratio}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{fit_mubigneg_cent}{Negative tracks: SE$-$ME $m^2$ and fits, 0--5\%; encodings as in Fig.~\ref{fig:fit_mubig_cent}.}
+\caption{Large sample, method 1: SE$-$ME and line-shape fits, negative tracks, 0--5\%.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.82}{fit_mubigpos_cent}{Positive tracks: SE$-$ME $m^2$ and fits, 0--5\%; encodings as in Fig.~\ref{fig:fit_mubig_cent}.}
+\caption{Large sample, method 1: SE$-$ME and line-shape fits, positive tracks, 0--5\%.}
+\end{figure}

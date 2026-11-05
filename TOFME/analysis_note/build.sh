@@ -20,8 +20,24 @@ if [ "$1" != "--tex-only" ]; then
   root -b -q -l "$NOTE/scripts/make_late.C(\"$NOTE/data/me_v8.root\")" > logs/make_late.out 2>&1
   root -b -q -l "$NOTE/scripts/make_mu.C(\"$NOTE/data/me_mu.root\")" > logs/make_mu.out 2>&1
   root -b -q -l "$NOTE/scripts/make_ov.C(\"$NOTE/data/ov.root\")" > logs/make_ov.out 2>&1
+  root -b -q -l "$NOTE/scripts/make_ov.C(\"$NOTE/data/ov1.root\",\"trk\",\"ovt\")" > logs/make_ovtrk.out 2>&1
+  root -b -q -l "$NOTE/scripts/make_ov.C(\"$NOTE/data/ov2.root\",\"pool\",\"pool\")" > logs/make_ovpool.out 2>&1
+  root -b -q -l "$NOTE/scripts/make_ov.C(\"$NOTE/data/ov3.root\",\"pooltrk\",\"poolt\")" > logs/make_ovpooltrk.out 2>&1
   root -b -q -l "$NOTE/scripts/make_probe.C(\"$NOTE/data/mudst_probe4.root\",\"$NOTE/data/closure_s0.root\")" > logs/make_probe.out 2>&1
   python3 "$NOTE/scripts/make_mudst_table.py" "$NOTE" > logs/make_mudst_table.out
+  root -b -q -l "$NOTE/scripts/make_mu.C(\"$NOTE/data/mu_big.root\",\"big\")" > logs/make_mubig.out 2>&1
+  root -b -q -l "$NOTE/scripts/make_qm2.C(\"$NOTE/data/mu_big.root\",1,\"mubig\",\"Emulation\")" > logs/make_qm2_mubig.out 2>&1
+  for x in "mubig 0" "mubigneg -1" "mubigpos 1"; do set -- $x
+    root -b -q -l "$NOTE/scripts/make_fit.C(\"$NOTE/data/mu_big.root\",1,\"$1\",\"Emul\",$2)" > logs/make_fit_$1.out 2>&1 &
+  done; wait
+  python3 "$NOTE/scripts/make_big_tables.py" "$NOTE" > logs/make_big_tables.out
+  root -b -q -l "$NOTE/scripts/make_ov.C(\"$NOTE/data/ov_big.root\",\"big\",\"ovbig\")" > logs/make_ovbig.out 2>&1
+  root -b -q -l "$NOTE/scripts/make_qm2.C(\"$NOTE/data/ov_big.root\",0,\"ovbig\",\"Overlay\")" > logs/make_qm2_ovbig.out 2>&1
+  for x in "ovbig 0" "ovbigneg -1" "ovbigpos 1"; do set -- $x
+    root -b -q -l "$NOTE/scripts/make_fit.C(\"$NOTE/data/ov_big.root\",0,\"$1\",\"Ovl\",$2)" > logs/make_fit_$1.out 2>&1 &
+  done; wait
+  (cd "$NOTE" && root -b -q -l scripts/make_lowp.C) > logs/make_lowp.out 2>&1
+  python3 "$NOTE/scripts/make_big_m2_tables.py" "$NOTE" > logs/make_big_m2_tables.out
 fi
 (cd "$NOTE/.." && md5 -r StRoot/StTofMEQAMaker/StTofMEQAMaker.h StRoot/StTofMEQAMaker/StTofMEQAMaker.cxx macros/runTofMEQA.C macros/drawTofMEQA.C) > logs/md5_local.txt
 python3 "$NOTE/scripts/parse_log.py" "$NOTE" > logs/parse_log.out
