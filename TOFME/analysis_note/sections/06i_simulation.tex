@@ -45,6 +45,25 @@ events are classified by their refMult percentile within the simulated sample (b
 data classes. (iv) HIJING has no light nuclei (no deuteron peak). (v) No noise hits and no pile-up.}
 
 \subsubsection{Where the matched hits come from}
+\paragraph{Track selection and the decay category.} The simulated tracks pass exactly the data selection: primary tracks with
+$p_T>0.15$\,GeV/$c$, $|\eta|<1$, at least 15 fit points, fit/possible points $>0.52$, global DCA $<3$\,cm, and the production BTOF matching
+(\fpath{StTofSimAnaMaker}, same cuts as \fpath{StTofMEOverlayMaker}). There is no explicit requirement on where a decay happens. The MC
+particle of a TPC track is the one that contributed most of its hits (IdTruth). This fixes which decays can appear in the decay category:
+\begin{itemize}
+\item A $\pi/K\to\mu\nu$ decay early in the TPC gives a track whose hits are mostly from the muon; its IdTruth is the muon, so the TOF hit
+  of that muon is counted as \emph{own}. At 0.2--0.4\,GeV/$c$, \ownMuA\% of the own hits are made by muons (decays before the outer TPC
+  and the few primary muons). Decays very close to the vertex mostly fail the DCA and fit-point cuts.
+\item The decay category therefore contains decays late in the TPC or after it: only \decRALo\% of the decay vertices are at $R<100$\,cm;
+  \decRATpc\% are at 100--190\,cm (outer TPC) and \decRAOut\% between the TPC and the TOF, in the TOF trays included, at 0.2--0.4\,GeV/$c$
+  (\decRBTpc\%/\decRBOut\% at 0.4--0.6 and \decRCTpc\%/\decRCOut\% at 0.6--1\,GeV/$c$). The track is reconstructed with the parent's
+  momentum and the hit comes from the muon, which keeps nearly the same direction and velocity.
+\item These hits stay at the pion mass: \decPiA\%, \decPiB\% and \decPiC\% of them have $|q\,m^2|<0.15$\,GeV$^2$/$c^4$ in the three
+  momentum bins (Fig.~\ref{fig:sim_qm2}); the peak is slightly broader than the own-pion peak, with a tail toward the kaon at 0.6--1\,GeV/$c$.
+\end{itemize}
+The same decays happen in the data: they are part of the pion peak of the SE and are not in the ME. They are true matches of a
+pion (or kaon) track with a hit of its own decay product at almost the expected time, so they count as signal, not background, and they do
+not contribute to the late p--d excess.
+
 Table~\ref{tab:simfrac} gives the categories per momentum bin. At 0.2--0.4\,GeV/$c$, \simFrOwnA\% of the matches are own hits,
 \simFrDecA\% decay muons, \simFrSecA\% secondaries and \simFrUnrA\% unrelated hits.
 Fig.~\ref{fig:sim_qm2} shows how they distribute in $q\times m^2$ (read by eye): decay muons stay close to the pion peak; secondaries
@@ -192,6 +211,6 @@ allow in the K--p valley and above the deuteron, with or without ToT and with th
 are therefore not a reliable absolute template; the likely causes are the GEANT3 treatment of low-energy secondaries in the tray
 material and the absence of any electronics dead time or noise in the simulation (not tested).}
 
-\decision{Proposed: use the simulation as evidence for the origin of the low-momentum p--d excess, not as a correction: a simulated
-template would fix the p--d window at 0.2--0.4\,GeV/$c$ but over-subtract the K--p valley and the high-$m^2$ region by a factor of 2--3.
-The data-driven per-track excess (Sec.~\ref{sec:lowp}) remains the estimate of this component.}
+\choice{Decided (2026-11-06): the simulation is used as evidence for the origin of the low-momentum excess, not as a correction. A
+simulated template would fix the p--d window at 0.2--0.4\,GeV/$c$ but over-subtract the K--p valley and the high-$m^2$ region by a factor
+of 2--3. The component is estimated from the data instead (Sec.~\ref{sec:corrdd}).}

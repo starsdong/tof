@@ -297,6 +297,30 @@ void make_sim()
     TH2* h = (TH2*)S->Get("hPid_secondary");
     L << "note: hPid is filled for all m2; the p-d window species split is not stored\n";
   }
+  // decays: where the decay vertex is (track selection is the data QA selection; the TPC track truth is its dominant contributor)
+  {
+    TH2* r = (TH2*)S->Get("hRVx_decay");
+    const double dp[3][2] = {{0.2, 0.4}, {0.4, 0.6}, {0.6, 1.0}}; const char* dn[3] = {"A", "B", "C"};
+    for (int k = 0; k < 3; k++) {
+      TH1D* y = r->ProjectionY(Form("dR%d", k), r->GetXaxis()->FindBin(dp[k][0] + 1e-6), r->GetXaxis()->FindBin(dp[k][1] - 1e-6));
+      const double Tt = y->Integral(0, y->GetNbinsX() + 1);
+      auto I = [&](double a, double b) { return 100. * y->Integral(y->FindBin(a + 1e-6), y->FindBin(b - 1e-6)) / Tt; };
+      const double r100 = I(0, 100), rTpc = I(100, 190), rOut = I(190, 240);
+      L << "decay vertex R, p " << dp[k][0] << "-" << dp[k][1] << ": <100 cm " << r100 << "% 100-190 " << rTpc << "% 190-240 " << rOut << "% (" << Tt << " hits)\n";
+      T << Form("\\newcommand{\\decR%sLo}{%.1f}\n\\newcommand{\\decR%sTpc}{%.0f}\n\\newcommand{\\decR%sOut}{%.0f}\n", dn[k], r100, dn[k], rTpc, dn[k], rOut);
+      // |m2| of the decay hits: fraction inside the pion window |m2| < 0.15
+      TH3* hd = (TH3*)S->Get("hQM2_decay");
+      TH1D* z = hd->ProjectionZ(Form("dz%d", k), 0, nR + 1, hd->GetYaxis()->FindBin(dp[k][0] + 1e-6), hd->GetYaxis()->FindBin(dp[k][1] - 1e-6));
+      const double in = z->Integral(z->FindBin(-0.1499), z->FindBin(0.1499)), all = z->Integral(0, z->GetNbinsX() + 1);
+      L << "  decay hits with |q m2| < 0.15: " << 100 * in / all << "%\n";
+      T << Form("\\newcommand{\\decPi%s}{%.0f}\n", dn[k], 100 * in / all);
+    }
+    TH2* po = (TH2*)S->Get("hPid_own");
+    TH1D* q = po->ProjectionY("qown", po->GetXaxis()->FindBin(0.2001), po->GetXaxis()->FindBin(0.3999));
+    const double mu = 100 * (q->GetBinContent(q->FindBin(5)) + q->GetBinContent(q->FindBin(6))) / q->Integral();
+    L << "own hits 0.2-0.4 GeV/c made by muons: " << mu << "%\n";
+    T << Form("\\newcommand{\\ownMuA}{%.1f}\n", mu);
+  }
   co->SaveAs("figures/sim_origin.pdf"); co->SaveAs("figures/sim_origin.png");
 
   // ---------- (6) fast TPC simulator vs TpcRS on the same 1k events ----------

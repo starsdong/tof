@@ -24,7 +24,10 @@ agreement with an independent emulation (\muFrProdCi\% and \muFrProdAll\%; four 
 A HIJING+GEANT simulation of the 2019 detector (Sec.~\ref{sec:sim}, \simEvGen{} events) shows that the remaining
 low-momentum excess is track-correlated: at 0.2--0.4\,GeV/$c$ it is mostly secondaries produced by the track's own particle in the
 BTOF trays, at a rate (\simCorrA{} per $10^4$ tracks) flat in centrality as in the data. The simulated component over-predicts the K--p valley
-and is not used as a correction.
+and is not used as a correction; instead the component is estimated from the data (Sec.~\ref{sec:corrdd}) as a per-track rate with one
+hit-time profile, fitted to negative tracks away from the particle peaks. It is \cddpAllA\% of the ME-subtracted proton yield and
+\cddKAllA\% of the kaon yield at 0.2--0.4\,GeV/$c$, below 1\% above 0.4\,GeV/$c$, and is quoted as a systematic uncertainty, not
+subtracted.
 \textbf{Limitations:} the QA sections (\ref{sec:evtqa}--\ref{sec:tofqa}) use a \emph{test sample} of \nProcEvents{} events from one
 picoDst file of a single run (20093036); the mixed-event results use 15 runs. No bad-tray list is applied.
 The time of random hits without a stored time is an assumption in the picoDst sections (Sec.~\ref{sec:m2}); the MuDst

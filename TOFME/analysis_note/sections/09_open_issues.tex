@@ -15,8 +15,12 @@ Ordered by importance for the next step.
 \item Simulation (Sec.~\ref{sec:sim}): ToT and the slow BTOF simulator were tested (Sec.~\ref{sec:simvar}); a ToT raises the
   0.4--0.6\,GeV/$c$ correlated and unrelated rates toward the data but none of the responses removes the 3--4$\times$ over-prediction of
   correlated matches in the K--p valley and above the deuteron at 0.2--0.4\,GeV/$c$. Open: GEANT3 settings for low-energy secondaries
-  in the trays (time and energy cuts, hadronic package), electronics dead time, multiplicity tuning. [decision] simulation as evidence
-  only, not as a correction (Sec.~\ref{sec:simtmpl}).
+  in the trays (time and energy cuts, hadronic package), electronics dead time, multiplicity tuning. Decided: simulation as evidence
+  only, not as a correction (Sec.~\ref{sec:simtmpl}); the component is estimated from the data (Sec.~\ref{sec:corrdd}).
+\item Data-driven correlated component (Sec.~\ref{sec:corrdd}): systematics ($\kappa$, i.e.\ path length, $\pm10\%$; separate amplitude
+  for positive tracks; shape under the peaks) not evaluated; check the BTOF readout window against the fitted cut-off $t_0$.
+  Decided: quoted as a systematic of the random-match background, not subtracted; it exceeds the 10\% target only for protons at
+  0.2--0.4\,GeV/$c$ (\cddpAllA\%).
 \item Method 2 loses \ovbigSElose\% of the own matches in the overlay; quantify the effect on the random fraction.
 \item MuDst statistics: 98 files of 14 runs restored (\fpath{filelists/mudst/restore_100.txt}, 319\,GB); one job per file.
   Run 20088015 needs a workaround for the trigger-data decoding errors.

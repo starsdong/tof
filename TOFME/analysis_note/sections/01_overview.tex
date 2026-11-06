@@ -59,6 +59,11 @@ a QA baseline for the quantities the mixed-event study will use.
   Added to the data ME, the simulated component describes the data SE between p and d at 0.2--0.4\,GeV/$c$ (SE/(ME + sim.)
   \tmplFastRatSumCiA--\tmplFastRatSumPerA) but over-predicts the K--p valley and the region above the deuteron by 2--3$\times$, so it is
   not used as a correction.
+\item Data-driven correlated component (Sec.~\ref{sec:corrdd}): per QA track $f(t)=A/(1+e^{(t-t_0)/\tau})$ in hit time, fitted to
+  negative tracks in particle-free $m^2$ sidebands ($\chi^2$/ndf \cddChiN/\cddNdf; $A$ flat in centrality). Under the peaks it is
+  \cddpAllA\% (p) and \cddKAllA\% (K) of SE$-$ME at 0.2--0.4\,GeV/$c$, \cddpAllB\% and \cddKAllB\% at 0.4--0.6\,GeV/$c$; in the p--d window
+  above 0.4\,GeV/$c$, SE/(ME + corr.) = \cddPdCMMin--\cddPdCMMax{} (central, mid-central). Quoted as a systematic uncertainty of
+  the random-match background, not subtracted (target precision about 10\%).
 \item Occupancy: trays \deadTrayList{} have no hits at all; \nDeadModule{} of 3840 modules
   (\fracDeadModule\%) are empty. No matched track points to an empty module.
 \end{itemize}

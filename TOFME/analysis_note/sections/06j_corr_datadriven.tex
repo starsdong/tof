@@ -1,0 +1,97 @@
+\subsection{Data-driven estimate of the track-correlated component}
+\label{sec:corrdd}
+
+Sec.~\ref{sec:sim} shows that the excess of SE over ME at low momentum comes from late hits correlated with the track itself (mostly
+secondaries produced in the BTOF trays), which a mixed event cannot model. The simulation does not describe this component well enough to
+be subtracted (Sec.~\ref{sec:simtmpl}), so it is estimated from the data (\fpath{scripts/make_corrdd.C}, numbers in
+\fpath{logs/corrdd.txt}).
+
+\paragraph{Observation.} Away from the particle peaks, SE$-$ME per QA track (Fig.~\ref{fig:corrdd_res}):
+\begin{itemize}
+\item is the same for negative and positive tracks above 0.3\,GeV/$c$; at 0.2--0.3\,GeV/$c$ positive tracks have an additional
+  component, the proton energy-loss tail of Sec.~\ref{sec:lowp}, which consists of real protons and is not part of this estimate;
+\item is the same per track in all centralities (Fig.~\ref{fig:corrdd_cent});
+\item falls with $m^2$ in a way that depends on momentum, but is described by one function of the hit time $t$: roughly constant up to
+  $t\approx40$\,ns after the collision and falling to zero within the next $\approx$10\,ns (fitted $t_0$, $\tau$ below). The sharp end is likely the BTOF readout time window (not checked).
+\end{itemize}
+
+\paragraph{Model.} Per QA track and per ns of hit time,
+\[ f(t)=\frac{A}{1+\exp\left((t-t_0)/\tau\right)}, \qquad t=\kappa\sqrt{1+m^2/p^2}, \quad \kappa=L/c=8.34\,\mathrm{ns}\ (L=2.5\,\mathrm{m}), \]
+with $f=0$ below the pion arrival time ($m^2<m_\pi^2$): the hits come later than the track's own particle. In $m^2$ the expected
+counts are $N\,f(t)\,dt/dm^2$, summed over 0.01\,GeV/$c$ momentum bins with $N$ QA tracks each.
+\begin{itemize}
+\item Fit: $A$, $t_0$ and $\tau$ are fitted ($\chi^2$, Pearson variance) to SE$-$ME of \emph{negative} tracks, all centralities,
+  $0.2<p<1$\,GeV/$c$, in 0.05\,GeV$^2$/$c^4$ bins of $m^2$ sidebands free of particles: above the kaon, away from the (anti)proton and
+  deuteron peaks (windows widening with $p$), $m^2<5$\,GeV$^2$/$c^4$.
+\item Result: $A=(\cddA\pm\cddAe)\times10^{-6}$ per track per ns, $t_0=\cddTz\pm\cddTze$\,ns, $\tau=\cddTau\pm\cddTaue$\,ns;
+  $\chi^2/\mathrm{ndf}=\cddChiN/\cddNdf$.
+\item Centrality: with $t_0$ and $\tau$ fixed, $A$ fitted per centrality class ranges from \cddAmin{} to
+  \cddAmax{}$\times10^{-6}$ (Fig.~\ref{fig:corrdd_cent}).
+\item Application: the same $f$ per QA track is applied to all charges and every centrality class, with the number of QA tracks of the
+  class, and integrated under the particle peaks.
+\end{itemize}
+
+\choice{The correlated component is estimated from the data as a per-track rate with one time profile, fitted to negative tracks in
+regions free of particles. Assumptions: the rate per track is charge-independent (checked above 0.3\,GeV/$c$) and the time profile holds
+under the peaks.}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.98}{corrdd_res}{SE$-$ME per $10^4$ QA tracks of each charge (0--80\%, method 2) versus $m^2$, for six momentum bins; blue
+full: negative tracks, red open: positive tracks; black: the fitted model $f(t)$ (fit to negative tracks in the sidebands). The
+particle peaks run off scale. 0.1\,GeV$^2$/$c^4$ bins.}
+\caption{Data-driven correlated component: residual and model (\fpath{scripts/make_corrdd.C}).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.62}{corrdd_cent}{Amplitude $A$ of the correlated component fitted per centrality class (negative tracks, $t_0$ and $\tau$ fixed
+to the global fit); dashed: global fit.}
+\caption{Data-driven correlated component: centrality dependence (\fpath{scripts/make_corrdd.C}).}
+\end{figure}
+
+\paragraph{Validation.} Table~\ref{tab:corrddval} compares the data SE with ME + correlated in two windows, for all charges and
+centrality classes; none of these numbers enters the fit directly (the fit uses negative tracks of all centralities).
+\begin{itemize}
+\item p--d window (1.6--2.8\,GeV$^2$/$c^4$), 0.4--1\,GeV/$c$: SE/(ME + corr.) is \cddPdCMMin--\cddPdCMMax{} in central and mid-central
+  events (SE/ME \cddPdSEMEMin--\cddPdSEMEMax);
+  in 60--80\% it is \cddRpdPerB{} at 0.4--0.6 and \cddRpdPerC{} at 0.6--1\,GeV/$c$, with few entries.
+\item p--d window, 0.2--0.4\,GeV/$c$: SE/(ME + corr.) is \cddRpdCiA, \cddRpdMidA{} and \cddRpdPerA{} (0--10, 20--40, 60--80\%), against
+  SE/ME \tmplFastRatMECiA, \tmplFastRatMEMidA{} and \tmplFastRatMEPerA; the remaining excess is in positive tracks at 0.2--0.3\,GeV/$c$ (proton energy-loss tail, Fig.~\ref{fig:corrdd_res}).
+\item K--p valley (0.42--0.58): SE/(ME + corr.) is \cddVaCMabMin--\cddVaCMabMax{} in central and mid-central events at
+  0.2--0.6\,GeV/$c$ and \cddVaCMcMin--\cddVaCMcMax{} at 0.6--1\,GeV/$c$, against \cddVaSEMEMin--\cddVaSEMEMax{} for SE/ME. The valley also contains the tails of the K and p peaks (non-Gaussian, Sec.~\ref{sec:bigm2}),
+  so a value above 1 is expected there. In 60--80\% the valley ratio is \cddVaPerMin--\cddVaPerMax.
+\end{itemize}
+
+\input{tables/corrdd_val}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.98}{corrdd_m2}{Data SE (points), ME (method 2, red filled), the data-driven correlated component (green dashed) and their sum
+(blue), for 0--10, 20--40 and 60--80\% (columns) and 0.2--0.4, 0.4--0.6, 0.6--1\,GeV/$c$ (rows). 0.05\,GeV$^2$/$c^4$ bins, log scale.}
+\caption{Data mass spectra with ME and the data-driven correlated component (\fpath{scripts/make_corrdd.C}).}
+\end{figure}
+
+\paragraph{Size under the particle peaks.} Table~\ref{tab:corrdd} gives the correlated entries under the $\pi$, K and p windows as a
+fraction of SE$-$ME in the same window, i.e.\ the part of the ME-subtracted yield that is still background. It matters only below
+0.4\,GeV/$c$ for protons and kaons:
+\begin{itemize}
+\item 0.2--0.4\,GeV/$c$: \cddpAllA\% of the proton window and \cddKAllA\% of the kaon window (0--80\%), nearly the same in all
+  centralities (protons \cddpCiA, \cddpMidA, \cddpPerA\% in 0--10, 20--40, 60--80\%). Pions: \cddpiAllA\%.
+\item 0.4--0.6\,GeV/$c$: protons \cddpAllB\%, kaons \cddKAllB\%.
+\item 0.6--1\,GeV/$c$: protons \cddpAllC\%, kaons \cddKAllC\%.
+\end{itemize}
+
+\input{tables/corrdd_tab}
+
+\caveat{Systematics of this estimate (not yet evaluated): the path length is fixed ($\kappa$ for $L=2.5$\,m; the true $L$ varies with
+$\eta$ and curvature, which smears the time profile), the shape of $f$ under the peaks is an extrapolation from the sidebands, and the
+charge symmetry is assumed below 0.3\,GeV/$c$ where it cannot be checked because of the proton tail. A $\pm10\%$ change of $\kappa$ and a
+fit with an independent amplitude for positive tracks above 0.3\,GeV/$c$ are the natural variations.}
+
+\choice{Decided (2026-11-06): the correlated component is not subtracted; it is quoted as a systematic uncertainty of the
+random-match background, equal to its size under each particle window (Table~\ref{tab:corrdd}). The target precision of the analysis is
+about 10\%, so it is negligible above 0.4\,GeV/$c$ (below 1\% for all species) and for pions at all momenta.}
+
+\caveat{At 0.2--0.4\,GeV/$c$ the uncertainty is \cddpAllA\% for protons, above the 10\% target, and \cddKAllA\% for kaons. A
+measurement of the proton yield below 0.4\,GeV/$c$ would need this component subtracted, or this momentum bin excluded.}

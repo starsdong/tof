@@ -56,6 +56,9 @@
 \item Simulation: fast TPC simulator vs full TPC response on the same \simEvGenOneK{} GEANT events: category fractions agree within
   \simTrsMaxSig\,$\sigma$ (\fpath{scripts/make_sim.C}, Table~\ref{tab:simtrs}). Every TOF-matched simulated track has a truth class
   after the \fpath{StBTofSimMaker} truth-id patch: \simNoTruth{} matches without truth in the 50k sample (\fpath{logs/sim_numbers.txt}).
+\item Data-driven correlated component: fit $\chi^2$/ndf \cddChiN/\cddNdf{} on negative tracks; the model, fitted without positive tracks
+  and with all centralities summed, reproduces positive tracks above 0.3\,GeV/$c$ (Fig.~\ref{fig:corrdd_res}) and the p--d window per
+  centrality (Table~\ref{tab:corrddval}) (\fpath{scripts/make_corrdd.C}).
 \end{itemize}
 
 \subsection{Not verified (assumptions)}
@@ -93,4 +96,6 @@
   efficiency at $\eta\approx0$) are read from the figures, not fitted.
 \item Simulation: GEANT3 hadronic model and cuts for slow secondaries in the BTOF trays; ToT$\,=0$ of the fast BTOF simulator;
   centrality from the simulated refMult percentile; shapes in Fig.~\ref{fig:sim_qm2} and the decay radius range are read by eye.
+\item Data-driven correlated component: fixed path length ($\kappa$), charge symmetry below 0.3\,GeV/$c$, time profile under the peaks;
+  the interpretation of $t_0$ as the readout window is not checked.
 \end{itemize}

@@ -7,7 +7,7 @@ Data: Run19 Au+Au 19.6 GeV (production_19GeV_2019), production P24iy (SL24y); pi
 Analysis note: `analysis_note/` (draft v0.7, 78 pages; `TOFME_analysis_note_v0.7.pdf` on GitHub).
 GitHub: https://github.com/starsdong/tof, folder TOFME/ (code, note sources, figures, PDF; no data/logs/tables).
 
-## Status (2026-11-06): simulation study added (note draft v0.8, Sec. 7.10, 86 pages)
+## Status (2026-11-06): simulation study + data-driven correlated component (note draft v0.9, Secs. 7.10-7.11, 93 pages)
 All planned studies done; results are in note v0.7 (Secs. 7.7-7.9). Open items are listed below and in the note,
 Sec. "Open issues".
 
@@ -62,6 +62,15 @@ Sec. "Open issues".
 - Code: sim/ (starsim_hijing.C, reco_sim.C, run_sim.sh, sim_job*.sh, sim*.sub, sim_status.sh), StRoot/StBTofSimMaker (patched:
   truth id for every hit), StRoot/StTofSimAnaMaker, macros/runTofSimAna.C, analysis_note/scripts/make_sim.C.
   Outputs on SDCC output/sim/{h1k,h50k}; merged analysis files analysis_note/data/sim_{h50k_tfs,h1k_tfs,h1k_trs}.root.
+
+### Data-driven correlated component (Sec. 7.11)
+- Decision: simulation used as evidence for the origin only. Decays in the sim decay class happen at R 100-240 cm (track passes the data
+  QA cuts; earlier decays appear as the muon's own hit) and stay at the pion mass -> part of the pion peak in data, signal not background.
+- Per QA track, hit-time profile f(t) = A/(1+exp((t-t0)/tau)), t = 8.34 ns sqrt(1+m2/p^2), fitted to negative-track SE-ME in
+  particle-free m2 sidebands (0.2-1 GeV/c, all centralities): A = 3.4e-5 /track/ns (flat in centrality), t0 = 42.3 ns, tau = 2.3 ns.
+- Under the peaks (0-80%): protons 16.9% / 0.7% / 0.13% and kaons 2.4% / 0.3% / 0.08% of SE-ME at 0.2-0.4 / 0.4-0.6 / 0.6-1 GeV/c.
+- Decision: quoted as a systematic of the random-match background (target precision ~10%), not subtracted; exceeds 10% only for
+  protons at 0.2-0.4 GeV/c. Script: analysis_note/scripts/make_corrdd.C.
 
 ## Code
 - StRoot/StTofMEQAMaker (QA), StTofMEMaker (picoDst ME, v10), StTofClosureMaker (MuDst closure),
