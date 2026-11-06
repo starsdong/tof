@@ -52,6 +52,13 @@ a QA baseline for the quantities the mixed-event study will use.
   for Gaussians, 0--5\%); raw $\bar{\rm p}$/p = \bigRatPMin--\bigRatPMax{} at 0.4--2.5\,GeV/$c$. Method 2 (Sec.~\ref{sec:bigm2}) gives \ovbigFrCi\% and \ovbigFrAll\%, within \bigTwoOneFrDev\% of method 1, and
   yields within \bigTwoYieldAgree\% at 0.4--2\,GeV/$c$. The SE excess between p and d at low momentum is a fixed rate per track, independent of
   centrality and flat in time, so it is not a random match (Sec.~\ref{sec:lowp}).
+\item Full simulation (Sec.~\ref{sec:sim}, HIJING+GEANT, \simEvGen{} events): \simFrDecA\% of the matches at 0.2--0.4\,GeV/$c$ are decay
+  muons (they stay near the pion peak) and \simFrSecA\% secondaries, \simSecTray\% of which start in the BTOF trays. In the p--d window the
+  correlated rate is \simCorrA{} per $10^4$ tracks, flat in centrality (data/simulation \simDataRatMinA--\simDataRatMaxA); at
+  0.4--0.6\,GeV/$c$ the simulation is low (data/simulation \simDataRatMinB--\simDataRatMaxB; a simulated ToT closes part of it).
+  Added to the data ME, the simulated component describes the data SE between p and d at 0.2--0.4\,GeV/$c$ (SE/(ME + sim.)
+  \tmplFastRatSumCiA--\tmplFastRatSumPerA) but over-predicts the K--p valley and the region above the deuteron by 2--3$\times$, so it is
+  not used as a correction.
 \item Occupancy: trays \deadTrayList{} have no hits at all; \nDeadModule{} of 3840 modules
   (\fracDeadModule\%) are empty. No matched track points to an empty module.
 \end{itemize}

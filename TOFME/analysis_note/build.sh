@@ -38,6 +38,10 @@ if [ "$1" != "--tex-only" ]; then
   done; wait
   (cd "$NOTE" && root -b -q -l scripts/make_lowp.C) > logs/make_lowp.out 2>&1
   python3 "$NOTE/scripts/make_big_m2_tables.py" "$NOTE" > logs/make_big_m2_tables.out
+  (cd "$NOTE" && root -b -q -l scripts/make_sim.C) > logs/make_sim.out 2>&1
+  (cd "$NOTE" && for r in h50k:h50k_tfs:Fast t5knotot:t5k_notot:Tnotot t5ktot:t5k_tot:Ttot t5kslow:t5k_slow:Tslow; do IFS=: read t f m <<< "$r";
+     root -b -q -l "scripts/make_simtmpl.C(\"data/sim_$f.root\",\"$t\",\"$m\")"; done) > logs/make_simtmpl.out 2>&1
+  (cd "$NOTE" && root -b -q -l scripts/make_simvar.C) > logs/make_simvar.out 2>&1
 fi
 (cd "$NOTE/.." && md5 -r StRoot/StTofMEQAMaker/StTofMEQAMaker.h StRoot/StTofMEQAMaker/StTofMEQAMaker.cxx macros/runTofMEQA.C macros/drawTofMEQA.C) > logs/md5_local.txt
 python3 "$NOTE/scripts/parse_log.py" "$NOTE" > logs/parse_log.out

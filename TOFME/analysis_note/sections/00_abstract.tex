@@ -21,6 +21,10 @@ reproduce production exactly. They are then re-run on overlaid events (hits and 
 mixed event describes the same-event background between the p and d peaks (SE/ME = \ovtHiCi{} in 0--5\%, against
 \mtSbRatioAllVnine{} on picoDst). Random matches are \ovtFrCi\% of the TOF matches in 0--5\% and \ovtFrAll\% in 0--80\%, in
 agreement with an independent emulation (\muFrProdCi\% and \muFrProdAll\%; four MuDst files of two runs).
+A HIJING+GEANT simulation of the 2019 detector (Sec.~\ref{sec:sim}, \simEvGen{} events) shows that the remaining
+low-momentum excess is track-correlated: at 0.2--0.4\,GeV/$c$ it is mostly secondaries produced by the track's own particle in the
+BTOF trays, at a rate (\simCorrA{} per $10^4$ tracks) flat in centrality as in the data. The simulated component over-predicts the K--p valley
+and is not used as a correction.
 \textbf{Limitations:} the QA sections (\ref{sec:evtqa}--\ref{sec:tofqa}) use a \emph{test sample} of \nProcEvents{} events from one
 picoDst file of a single run (20093036); the mixed-event results use 15 runs. No bad-tray list is applied.
 The time of random hits without a stored time is an assumption in the picoDst sections (Sec.~\ref{sec:m2}); the MuDst

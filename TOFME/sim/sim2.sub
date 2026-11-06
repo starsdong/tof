@@ -1,0 +1,13 @@
+# HIJING Au+Au 19.6 GeV simulation jobs (sim/sim_job2.sh), one seed per job
+# queue file: sim/seeds_<TOP>.txt (one seed per line); edit NEV/TOP/RECO below
+executable     = /bin/bash
+arguments      = "sim/sim_job2.sh $(seed) $(nev) 0 14.5"
+environment    = "TOP=$(top) RECO=$(reco) KEEPFZD=$(keepfzd)"
+initialdir     = /gpfs01/star/pwg/dongx/tof/TOFME
+output         = logs/sim/$(top)_$(seed).out
+error          = logs/sim/$(top)_$(seed).err
+log            = logs/sim/$(top).condor.log
+accounting_group = group_star.cas
+request_memory = 3000
+getenv         = False
+queue seed, nev, top, reco, keepfzd from sim/queue_$(qname).txt

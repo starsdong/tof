@@ -1,0 +1,197 @@
+\subsection{Full simulation: origin of the low-momentum excess}
+\label{sec:sim}
+
+The SE excess over the ME between the p and d peaks at low momentum is a fixed rate per track, flat in centrality and flat in time
+up to 27\,ns (Sec.~\ref{sec:lowp}). Two track-correlated sources were suspected: decays in flight and particles scattered or produced
+in the detector material. Both are present in a full simulation, where every BTOF hit can be traced to the particle that made it.
+
+\paragraph{Simulation set-up.}
+\begin{itemize}
+\item Generator: HIJING 1.383, Au+Au at $\sqrt{s_{NN}}=19.6$\,GeV, impact parameter 0--14.5\,fm, no jet quenching, weak decays
+  ($\pi^0$, K$^0_S$, $\Lambda$, \ldots) left to GEANT (\fpath{sim/starsim_hijing.C}). All particles go to GEANT (no $\eta$ cut).
+  Vertex Gaussian with $\sigma_{x,y}=0.1$\,cm, $\sigma_z=50$\,cm.
+\item Detector: starsim (GEANT3) with the y2019a AgML geometry (iTPC, BTOF, VPD, magnet).
+\item Reconstruction: \fpath{sim/reco_sim.C} with the bfc options \fcmd{y2019a}, \fcmd{fzin}, \fcmd{AgML}, \fcmd{useXgeom},
+  \fcmd{iTpcIT}, \fcmd{MakeEvent}, \fcmd{ITTF}, \fcmd{VFMinuit}, \fcmd{tpcDB}, \fcmd{btofsim}, \fcmd{vpdSim}, \fcmd{btofMatch},
+  \fcmd{btofCalib}, \fcmd{vpdCalib}, \fcmd{IdTruth}, \fcmd{McEvent}, \fcmd{CMuDst} (full list in \fpath{sim/sim_job.sh}), plus either
+  \fcmd{tfs} (fast TPC simulator) or \fcmd{TpcRS}, \fcmd{TpxClu}, \fcmd{TpcHitMover} (full TPC response). The BTOF matching and calibration are the production makers.
+\item BTOF simulator: the SL24y \fpath{StBTofSimMaker} in fast mode, with a local patch (\fpath{StRoot/StBTofSimMaker}). The SL24y
+  maker sets the truth id of a hit only for crosstalk hits; the patch sets it for every hit to the GEANT track of the earliest
+  contribution in the cell, i.e.\ the one that defines the hit time.
+\item Truth analysis: \fpath{StRoot/StTofSimAnaMaker} (\fpath{macros/runTofSimAna.C}) on the simulation MuDst. Same event and track
+  selection as the data (Table~\ref{tab:trkcut}). The matched hit of every TOF-matched QA track is classified with the MC record
+  (\fcmd{StMuMcTrack}, \fcmd{StMuMcVertex}):
+  \emph{own} (the track's particle made the hit); \emph{decay} (a descendant through a decay: weakly decaying parent and a muon daughter,
+  or a decay vertex at $R<190$\,cm); \emph{secondary} (a descendant through any other process, mostly interactions); \emph{relative}
+  (an ancestor or sibling); \emph{unrelated} (no common ancestry, the part a mixed event describes).
+  $m^2$ is computed with the true event time (hit time minus the simulation clock offset of 19.01\,ns).
+\item Samples: \simEvGen{} events with the fast TPC simulator (999 jobs of 50 events; one job hung in HIJING and was removed),
+  \simEvAna{} after the vertex cuts, \simNTrk{} QA tracks; and the same \simEvGenOneK{} GEANT events reconstructed both with the fast
+  simulator and with TpcRS. Production scripts \fpath{sim/sim_job.sh}, \fpath{sim/sim_job2.sh}, \fpath{sim/sim.sub},
+  \fpath{sim/sim2.sub}; numbers from \fpath{scripts/make_sim.C} (\fpath{logs/sim_numbers.txt}).
+\end{itemize}
+
+\choice{The fast TPC simulator is used for the large sample. The full TPC response costs about 3 minutes per peripheral and 10 minutes
+per mid-central event (98\% of the CPU), against a few seconds. On the same 1k events the two give the same fractions of all match
+categories within \simTrsMaxSig\,$\sigma$ (Table~\ref{tab:simtrs}).}
+
+\input{tables/sim_trs}
+
+\caveat{Limitations of the simulation: (i) the fast BTOF simulator gives every hit ToT$\,=0$, so the production rule ``largest ToT
+wins'' between several candidate hits cannot act and ties go to the next criterion; in data a slow, heavily ionising secondary has a
+large ToT and is preferred. (ii) Production of slow protons and nuclear fragments in the material depends on the GEANT3 hadronic
+package and its cuts (not tuned here). (iii) Centrality: HIJING plus reconstruction was not tuned to the data refMult; simulated
+events are classified by their refMult percentile within the simulated sample (b\,$<$\,14.5\,fm), an approximate match to the
+data classes. (iv) HIJING has no light nuclei (no deuteron peak). (v) No noise hits and no pile-up.}
+
+\subsubsection{Where the matched hits come from}
+Table~\ref{tab:simfrac} gives the categories per momentum bin. At 0.2--0.4\,GeV/$c$, \simFrOwnA\% of the matches are own hits,
+\simFrDecA\% decay muons, \simFrSecA\% secondaries and \simFrUnrA\% unrelated hits.
+Fig.~\ref{fig:sim_qm2} shows how they distribute in $q\times m^2$ (read by eye): decay muons stay close to the pion peak; secondaries
+that arrive together with the track's own particle sit at its $m^2$ (pion and proton peaks), and the late ones form a broad
+continuum; at 0.2--0.4\,GeV/$c$ this continuum is above the unrelated matches for $|q\,m^2|>1$.
+
+\input{tables/sim_frac}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.9}{sim_qm2}{$q\times m^2$ of TOF-matched QA tracks in HIJING+GEANT (\simEvAna{} events, all centralities, fast TPC simulator),
+by origin of the matched hit: own particle (gray), decay (green), secondary (red), unrelated (blue). The relative category is empty.
+0.04\,GeV$^2$/$c^4$ bins, log scale.}
+\caption{Simulation: origin of the matched hit versus $q\times m^2$ (\fpath{scripts/make_sim.C}).}
+\end{figure}
+
+Fig.~\ref{fig:sim_origin} shows where the branch leading to the hit starts. \simSecTray\% of the secondaries (0.2--1\,GeV/$c$) start at
+$200<R<240$\,cm, i.e.\ in the BTOF trays themselves; the decays are spread along the path from $R\approx110$\,cm to the trays (read by eye). The
+secondaries that make the hit are e$^\pm$ (\simSecElec\%), $\pi^\pm$ (\simSecPion\%) and protons (\simSecProton\%); the decay hits are muons.
+
+\begin{figure}[H]
+\centering
+\figpanel{0.95}{sim_origin}{Left: radius of the vertex where the branch leading to the hit leaves the track's particle, for decays (green)
+and secondaries (red), $0.2<p<1$\,GeV/$c$, log scale. Right: particle that made the hit, in \% of each category.}
+\caption{Simulation: origin of correlated hits (\fpath{scripts/make_sim.C}).}
+\end{figure}
+
+\subsubsection{Comparison with the data}
+In the p--d window ($1.6<|q\,m^2|<2.8$\,GeV$^2$/$c^4$) at 0.2--0.4\,GeV/$c$ the simulation has \simHiNCorr{} correlated entries;
+\simHiSecShare\% of them are secondaries, \simHiNDec{} decays, and only \simHiNOwn{} entries are own hits.
+Fig.~\ref{fig:sim_rate} and Table~\ref{tab:simrate} compare, per $10^4$ QA tracks and versus centrality, the data SE$-$ME (method 2)
+with the simulated correlated matches, and the data ME with the simulated unrelated matches.
+\begin{itemize}
+\item 0.2--0.4\,GeV/$c$: the simulated correlated rate is \simCorrA{} per $10^4$ tracks (all centralities) and, like the data, flat in
+  centrality. The data/simulation ratio is \simDataRatMinA--\simDataRatMaxA{} across the five classes, with at most
+  \simNsigMaxA\,$\sigma$ difference.
+\item 0.4--0.6\,GeV/$c$: the simulation (\simCorrB) is below the data in every class; data/simulation \simDataRatMinB--\simDataRatMaxB,
+  up to \simNsigMaxB\,$\sigma$.
+\item 0.6--1\,GeV/$c$: the simulation (\simCorrC) agrees with the data, at most \simNsigMaxC\,$\sigma$ apart.
+\item The simulated unrelated rate rises with centrality like the data ME but stays below it (Table~\ref{tab:simrate}): the simulation
+  has fewer BTOF hits per event (no noise, no pile-up, untuned multiplicity).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.98}{sim_rate}{Entries in $1.6<m^2<2.8$\,GeV$^2$/$c^4$ per $10^4$ QA tracks versus centrality, for 0.2--0.4, 0.4--0.6 and
+0.6--1\,GeV/$c$. Black full: data SE$-$ME (method 2); red squares: simulated correlated matches (decay + secondary + relative); black
+open, dashed: data ME; blue open, dashed: simulated unrelated matches. Simulation centrality from the refMult percentile (approximate).
+Statistical errors.}
+\caption{Simulation versus data: the track-correlated rate in the p--d window (\fpath{scripts/make_sim.C}).}
+\end{figure}
+
+\input{tables/sim_rate}
+
+\paragraph{Time structure.} Fig.~\ref{fig:sim_dt} compares $t-t_\pi$ per QA track. In the late region 20--27\,ns, beyond the K and p
+peaks, the data SE$-$ME is \lateDataA, \lateDataB{} and \lateDataC{} per ns per $10^4$ tracks at 0.2--0.4, 0.4--0.6 and 0.6--1\,GeV/$c$;
+the simulated correlated matches give \lateSimA, \lateSimB{} and \lateSimC{} (data/simulation \lateRatA, \lateRatB, \lateRatC). At the
+lowest momentum the simulation has the late plateau at a similar level, but not its momentum independence: in data the plateau stays at the
+same level up to 1\,GeV/$c$, in the simulation it falls with momentum.
+
+\begin{figure}[H]
+\centering
+\figpanel{0.98}{sim_dt}{$t-t_\pi$ per ns per $10^4$ QA tracks. Black points: data SE$-$ME (method 2, 0--80\%); gray: simulation, own +
+correlated matches (everything except unrelated); red: simulated correlated matches. Simulation with the true event time; the peak
+widths and the K/p yields of HIJING are not tuned to the data. Log scale.}
+\caption{Simulation versus data: time structure (\fpath{scripts/make_sim.C}).}
+\end{figure}
+
+\paragraph{Charge.} Table~\ref{tab:simcharge} compares the negative/positive ratio. The data excess is positive-dominated at
+0.2--0.3\,GeV/$c$ (\chDataA) and below 1 elsewhere; the simulated correlated matches are charge-symmetric at 0.2--0.3\,GeV/$c$
+(\chSimA) and negative-dominated at 0.3--0.6\,GeV/$c$ (\chSimB, \chSimC). The positive-only data component at the lowest momentum
+(Sec.~\ref{sec:lowp}) is therefore not reproduced (HIJING has no light nuclei, and the proton energy-loss tail is small in the
+simulation), and the negative excess of the simulation at 0.3--0.6\,GeV/$c$ is not seen in data.
+
+\input{tables/sim_charge}
+
+\subsubsection{Data mass spectrum with the simulated correlated component}
+\label{sec:simtmpl}
+The simulated correlated matches (decay + secondary + relative), normalized per QA track to the data, are added to the data ME and
+compared with the data SE $m^2$ spectrum (Fig.~\ref{fig:simtmpl}, \fpath{scripts/make_simtmpl.C}). The simulated $m^2$ is
+$|q\,m^2|$ and its centrality is the refMult percentile of the simulated events.
+\begin{itemize}
+\item Between the p and d peaks (1.6--2.8\,GeV$^2$/$c^4$) at 0.2--0.4\,GeV/$c$, SE/ME is \tmplFastRatMECiA, \tmplFastRatMEMidA{} and
+  \tmplFastRatMEPerA{} in 0--10, 20--40 and 60--80\%; SE/(ME + sim.\ correlated) is \tmplFastRatSumCiA, \tmplFastRatSumMidA{} and
+  \tmplFastRatSumPerA. At 0.6--1\,GeV/$c$: \tmplFastRatSumCiC, \tmplFastRatSumMidC, \tmplFastRatSumPerC. At 0.4--0.6\,GeV/$c$ an excess
+  remains: \tmplFastRatSumCiB, \tmplFastRatSumMidB, \tmplFastRatSumPerB.
+\item In the K--p valley (0.35--0.6\,GeV$^2$/$c^4$) and above the deuteron (3.0--4.5\,GeV$^2$/$c^4$) at 0.2--0.4\,GeV/$c$ the simulation
+  predicts far more correlated matches than the data allow: SE/(ME + sim.) is \tmplFastRatSumLoCiA--\tmplFastRatSumLoPerA{} and
+  \tmplFastRatSumHiCiA--\tmplFastRatSumHiPerA{} (0--10\% and 60--80\%), i.e.\ the simulated correlated component alone is larger than the
+  data SE there (Table~\ref{tab:simvartmpl}).
+\end{itemize}
+
+\input{tables/simvar_tmpl}
+
+\begin{figure}[H]
+\centering
+\figpanel{0.98}{simtmpl_h50k}{Data SE $m^2$ (points) compared with the data ME (method 2, red filled), the simulated correlated matches
+(HIJING+GEANT, 50k events, no ToT; green dashed) scaled to the number of data QA tracks, and their sum (blue). Columns: 0--10, 20--40,
+60--80\%; rows: 0.2--0.4, 0.4--0.6, 0.6--1\,GeV/$c$. 0.1\,GeV$^2$/$c^4$ bins, log scale. The ratios in the p--d window are printed in
+each panel.}
+\caption{Data mass spectra with the simulated correlated component (\fpath{scripts/make_simtmpl.C}).}
+\label{fig:simtmpl}
+\end{figure}
+
+\subsubsection{BTOF response: ToT and the slow simulator}
+\label{sec:simvar}
+The SL24y BTOF simulator writes the trailing edge equal to the leading edge in both its modes, so every simulated hit has ToT\,$=0$ and
+the production rule ``largest ToT wins'' between several candidate hits never acts (all candidates tie and the closest-$y$ rule
+decides); the slow mode has no setter. The patched \fpath{StBTofSimMaker} adds, through environment variables: (a) a ToT from the cell
+energy deposit in fast mode, ToT$\,=16.0+1.05\ln(dE/dE_{\rm MIP})$\,ns with $dE_{\rm MIP}=0.047$\,keV (the median GEANT deposit of
+minimum-ionizing pions), and (b) the slow (avalanche) mode with its threshold, with the ToT from the summed avalanche charge in the same
+form ($Q_{\rm MIP}=0.0095$\,pC). The constants are taken from the data: in Run~19 the ToT of identified pions is 16.0\,ns (16--84\%:
+15.1--17.1\,ns) at minimum ionization and rises to 17.9\,ns for protons at $\beta\gamma\approx0.45$ (\fpath{macros/totData.C}, one MuDst
+file). The same 5k GEANT events (\fpath{sim/sim_job3.sh}) were reconstructed with the three responses (Table~\ref{tab:simvar}).
+
+\input{tables/simvar_tab}
+
+\begin{itemize}
+\item With a ToT the matching efficiency of QA tracks rises by 2--3 points (\varNoTotEffA\% $\to$ \varTotEffA\%, \varSlowEffA\% at
+  0.2--0.4\,GeV/$c$), and the unrelated matches roughly double to triple: when several hits compete, the ToT rule picks a random hit more
+  often than the closest-$y$ rule. At 0.4--0.6\,GeV/$c$ the unrelated rate in the p--d window becomes \varTotPdBU{} (fast + ToT) and
+  \varSlowPdBU{} (slow) per $10^4$ tracks, against \varNoTotPdBU{} without ToT; the data ME is \varDataPdBU.
+\item The correlated rate in the p--d window at 0.4--0.6\,GeV/$c$ grows from \varNoTotPdB{} to \varTotPdB{} and \varSlowPdB{} per $10^4$
+  tracks (data SE$-$ME \varDataPdB), closing part of the gap seen in Table~\ref{tab:simrate}. At 0.2--0.4\,GeV/$c$ it is unchanged within
+  errors (\varNoTotPdA, \varTotPdA, \varSlowPdA; data \varDataPdA).
+\item The over-prediction in the K--p valley and above the deuteron at 0.2--0.4\,GeV/$c$ is not removed: \varNoTotKpA, \varTotKpA, \varSlowKpA{}
+  correlated per $10^4$ tracks against a data SE$-$ME of \varDataKpA{} in the valley, and \varNoTotHiA, \varTotHiA, \varSlowHiA{} against
+  \varDataHiA{} at 3.0--4.5\,GeV$^2$/$c^4$. The slow simulator's threshold does not remove these secondaries either.
+\end{itemize}
+
+\caveat{The 5k sample has 1--70 entries per cell of Table~\ref{tab:simvar}; differences below about 2$\sigma$ are not significant. The
+ToT scale of the simulation is not tuned: own hits at 0.4--1\,GeV/$c$ have a median ToT of about 18\,ns (data about 16\,ns), which matters
+only through ToT differences between candidates. In slow mode the avalanche charge is saturated and does not depend on $\beta\gamma$, so
+the slow ToT does not favour heavily ionizing hits.}
+
+\choice{Conclusion: the simulation confirms that most of the low-momentum excess is track-correlated and not combinatorial. It is
+dominated by secondaries produced by the track's own particle in the BTOF trays (R\,$\approx$\,210--220\,cm), not by decays in flight,
+which stay under the pion peak. At 0.2--0.4\,GeV/$c$ the simulated rate is flat in centrality and within \simDataRatMinA--\simDataRatMaxA{}
+(data/simulation) of the data.}
+
+\caveat{Not reproduced: the data rate at 0.4--0.6\,GeV/$c$ (data/simulation \simDataRatMinB--\simDataRatMaxB{} without ToT; a ToT
+closes part of it, Sec.~\ref{sec:simvar}), the momentum-independent late plateau, the charge pattern, and the size of the correlated
+component outside the p--d window: at 0.2--0.4\,GeV/$c$ the simulation predicts about 3--4 times more correlated matches than the data
+allow in the K--p valley and above the deuteron, with or without ToT and with the slow simulator. The simulated secondaries in the trays
+are therefore not a reliable absolute template; the likely causes are the GEANT3 treatment of low-energy secondaries in the tray
+material and the absence of any electronics dead time or noise in the simulation (not tested).}
+
+\decision{Proposed: use the simulation as evidence for the origin of the low-momentum p--d excess, not as a correction: a simulated
+template would fix the p--d window at 0.2--0.4\,GeV/$c$ but over-subtract the K--p valley and the high-$m^2$ region by a factor of 2--3.
+The data-driven per-track excess (Sec.~\ref{sec:lowp}) remains the estimate of this component.}

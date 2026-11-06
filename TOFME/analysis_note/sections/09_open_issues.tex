@@ -10,8 +10,13 @@ Ordered by importance for the next step.
   momentum bins or a resolution-scaled variable, and understand the continuum left at 0.2--0.4\,GeV/$c$.
 \item Track-correlated late hits (Sec.~\ref{sec:lowp}): a charge-symmetric SE excess of about \lowpTwoADmin--\lowpTwoADmax{} per
   $10^4$ tracks in $1.6<m^2<2.8$\,GeV$^2$/$c^4$ at 0.2--0.4\,GeV/$c$, independent of centrality, plus a positive-only part at
-  0.2--0.3\,GeV/$c$. Identify the source (cell of the late hit relative to the projection, ToT, $|\eta|$ dependence) and decide whether
-  a per-track template correction is needed.
+  0.2--0.3\,GeV/$c$. The full simulation attributes it mainly to secondaries from the BTOF trays (Sec.~\ref{sec:sim}); the
+  positive-only part is not reproduced.
+\item Simulation (Sec.~\ref{sec:sim}): ToT and the slow BTOF simulator were tested (Sec.~\ref{sec:simvar}); a ToT raises the
+  0.4--0.6\,GeV/$c$ correlated and unrelated rates toward the data but none of the responses removes the 3--4$\times$ over-prediction of
+  correlated matches in the K--p valley and above the deuteron at 0.2--0.4\,GeV/$c$. Open: GEANT3 settings for low-energy secondaries
+  in the trays (time and energy cuts, hadronic package), electronics dead time, multiplicity tuning. [decision] simulation as evidence
+  only, not as a correction (Sec.~\ref{sec:simtmpl}).
 \item Method 2 loses \ovbigSElose\% of the own matches in the overlay; quantify the effect on the random fraction.
 \item MuDst statistics: 98 files of 14 runs restored (\fpath{filelists/mudst/restore_100.txt}, 319\,GB); one job per file.
   Run 20088015 needs a workaround for the trigger-data decoding errors.

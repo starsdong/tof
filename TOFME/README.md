@@ -7,7 +7,7 @@ Data: Run19 Au+Au 19.6 GeV (production_19GeV_2019), production P24iy (SL24y); pi
 Analysis note: `analysis_note/` (draft v0.7, 78 pages; `TOFME_analysis_note_v0.7.pdf` on GitHub).
 GitHub: https://github.com/starsdong/tof, folder TOFME/ (code, note sources, figures, PDF; no data/logs/tables).
 
-## Status (2026-11-05): concluded at this stage
+## Status (2026-11-06): simulation study added (note draft v0.8, Sec. 7.10, 86 pages)
 All planned studies done; results are in note v0.7 (Secs. 7.7-7.9). Open items are listed below and in the note,
 Sec. "Open issues".
 
@@ -45,6 +45,23 @@ Sec. "Open issues".
   (2.1-2.3 at 0.2-0.4 GeV/c, method 2) while the ME rises 28x -> not random matches; flat in t - t_pi up to 27 ns;
   charge-symmetric at 0.3-0.6 GeV/c (neg/pos 0.75-0.92), positive-only at 0.2-0.25 GeV/c (proton energy-loss tail).
   Interpretation (unproven): track-correlated late hits (secondaries/back-splash or delayed neighbour signals).
+
+### Full simulation, HIJING+GEANT (Sec. 7.10, 2026-11-05/06)
+- 49,857 HIJING Au+Au 19.6 GeV events (b 0-14.5 fm), GEANT3 y2019a, fast TPC simulator (tfs); 1k events also with TpcRS
+  (category fractions agree within 1.6 sigma). Truth classes of the matched hit: own / decay / secondary / relative / unrelated.
+- 0.2-0.4 GeV/c: decay muons 2.4% (stay near the pion peak), secondaries 2.7%, 100% of them starting in the BTOF trays
+  (R 200-240 cm). In 1.6<m^2<2.8 the correlated rate is 2.7 per 1e4 QA tracks, flat in centrality; data/sim 0.71-1.00.
+- Not reproduced: 0.4-0.6 GeV/c (data/sim 1.6-2.4), momentum-independent late plateau, charge pattern.
+- Data mass spectrum vs ME + simulated correlated matches (Sec. 7.10.3): between p and d at 0.2-0.4 GeV/c SE/(ME+sim) =
+  0.86-1.00 (SE/ME 1.75-10.9), but the simulation over-predicts the K-p valley and m2 > 3 by 2-3x -> proposed: evidence, not a
+  correction (decision pending).
+- ToT test (Sec. 7.10.4; 5k events, same GEANT events with no ToT / fast + ToT(dE) / slow + ToT(charge); patched
+  StBTofSimMaker env vars TOFME_TOT_DE0, TOFME_SLOW, TOFME_TOT_Q0): ToT raises matching efficiency 2-3 points, doubles to
+  triples unrelated matches and the 0.4-0.6 GeV/c correlated rate; it does not remove the K-p valley over-prediction.
+  Code: sim/sim_job3.sh, sim/sim3.sub, macros/totData.C (data ToT), scripts/make_simtmpl.C, make_simvar.C.
+- Code: sim/ (starsim_hijing.C, reco_sim.C, run_sim.sh, sim_job*.sh, sim*.sub, sim_status.sh), StRoot/StBTofSimMaker (patched:
+  truth id for every hit), StRoot/StTofSimAnaMaker, macros/runTofSimAna.C, analysis_note/scripts/make_sim.C.
+  Outputs on SDCC output/sim/{h1k,h50k}; merged analysis files analysis_note/data/sim_{h50k_tfs,h1k_tfs,h1k_trs}.root.
 
 ## Code
 - StRoot/StTofMEQAMaker (QA), StTofMEMaker (picoDst ME, v10), StTofClosureMaker (MuDst closure),

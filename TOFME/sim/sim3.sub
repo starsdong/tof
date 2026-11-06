@@ -1,0 +1,12 @@
+# ToT-model test: sim/sim_job3.sh, one seed per job; queue file sim/queue_<qname>.txt with "seed nev top"
+executable     = /bin/bash
+arguments      = "sim/sim_job3.sh $(seed) $(nev)"
+environment    = "TOP=$(top)"
+initialdir     = /gpfs01/star/pwg/dongx/tof/TOFME
+output         = logs/sim/$(top)_$(seed).out
+error          = logs/sim/$(top)_$(seed).err
+log            = logs/sim/$(top).condor.log
+accounting_group = group_star.cas
+request_memory = 3000
+getenv         = False
+queue seed, nev, top from sim/queue_$(qname).txt
